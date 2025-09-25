@@ -1,0 +1,40 @@
+name: coderabbit-follow-up
+
+on:
+  schedule:
+    # Run every 30 minutes to keep autonomy tight without hammering the API.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Execute CodeRabbit follow-up automation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          INPUT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CODERABBIT_LOGINS: ${{ vars.CODERABBIT_LOGINS }}
+        run: |
+          echo "Running autopilot coordination script"
+          python scripts/automation/coderabbit_follow_up.py
+
