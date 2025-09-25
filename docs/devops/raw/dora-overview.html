@@ -1,0 +1,425 @@
+<!doctype html>
+<meta charset="utf-8">
+<html lang="en">
+
+<head>
+	<meta name="generator" content="Hugo 0.147.9">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HWLXSJLRVQ"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-HWLXSJLRVQ');
+</script>
+
+
+
+<title>DORA | Get Better at Getting Better</title>
+
+
+
+<link rel="stylesheet" href="/scss/main.beb0996b8e49f9f08bf003380deabca953d057a1d73b0bffb043cd4966e615a2.css" integrity="sha256-vrCZa45J&#43;fCL8AM4Deq8qVPQV6HXOwv/sEPNSWbmFaI=">
+<link rel="stylesheet" href="/css/quickcheck-variables.893d3e3acc263f6c37987aaa860c6ed32a88b3a286d6409d4fd06f0c1859cb82.css" integrity="sha256-iT0&#43;OswmP2w3mHqqhgxu0yqIs6KG1kCdT9BvDBhZy4I=">
+
+
+<meta name="description" content="DORA is a long running research program that seeks to understand the capabilities that drive software delivery and operations performance. DORA helps teams apply those capabilities, leading to better organizational performance.">
+<meta name="keywords" content="DevOps, Lead time, Deploy frequency, Change fail rate, MTTR, Time to restore, metrics, DORA">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="alternate" type="application/rss+xml" href="https://dora.dev/index.xml" title="" />
+<link href="https://fonts.googleapis.com/css?family=Google+Material+Icons&amp;lang=en" rel="stylesheet">
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#2d89ef">
+<meta name="theme-color" content="#ffffff">
+
+
+<meta property="og:url" content="https://dora.dev">
+<meta property="og:type" content="website">
+<meta property="og:title" content="DORA | Get Better at Getting Better">
+<meta property="og:description" content="DORA is a long running research program that seeks to understand the capabilities that drive software delivery and operations performance. DORA helps teams apply those capabilities, leading to better organizational performance.">
+<meta property="og:image" content="/img/misc/dora_social_image.png">
+
+
+<meta name="twitter:card" content="summary_large_image">
+<meta property="twitter:domain" content="dora.dev">
+<meta property="twitter:url" content="https://dora.dev">
+<meta name="twitter:title" content="DORA | Get Better at Getting Better">
+<meta name="twitter:description" content="DORA is a long running research program that seeks to understand the capabilities that drive software delivery and operations performance. DORA helps teams apply those capabilities, leading to better organizational performance.">
+<meta name="twitter:image" content="/img/misc/dora_social_image.png">
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let headings = document.querySelectorAll("h1[id], h2[id], h3[id], h4[id], h5[id], h6[id]");
+        headings.forEach((heading) => {
+            addAnchorLink(heading);
+        })
+
+        highlightSelectedHeading();
+    });
+
+    function addAnchorLink(heading) {
+        
+        let anchorText = heading.getAttribute('id');
+
+        let anchorLink = Object.assign(document.createElement('a'),{
+            href: '#' + anchorText,
+            className: 'heading-link',
+            innerHTML: '<span class="google-material-icons">link</span> <span class="click-to-copy">click to copy link</span>',
+        });
+        heading.append(anchorLink);
+        
+        heading.addEventListener("mouseover",
+            (event) => { anchorLink.style.visibility='visible' }
+        );
+        heading.addEventListener("mouseout",
+            (event) => { 
+                anchorLink.style.visibility='hidden';
+                anchorLink.lastChild.innerHTML='click to copy link';
+            }
+        );
+        
+        anchorLink.addEventListener("mouseover",
+            (event) => {
+                anchorLink.lastChild.style.visibility='visible';
+            }
+        );
+        anchorLink.addEventListener("mouseout",
+            (event) => {
+                anchorLink.lastChild.style.visibility='hidden';
+            }
+        );
+        anchorLink.addEventListener("click",
+            (event) => {
+                event.preventDefault();
+                let currentBaseUrl = location.href.split('#')[0];
+                let targetURL = `${currentBaseUrl}#${anchorText}`;
+                navigator.clipboard.writeText(targetURL);
+                console.debug(`copied to clipboard: ${targetURL}`);
+                anchorLink.lastChild.innerHTML='<em>copied!</em>';
+            }
+        );
+    };
+
+    function highlightSelectedHeading() {
+        
+        let selectedAnchor = location.href.split('#')[1];
+            if (selectedAnchor) {
+                document.querySelector(`#${selectedAnchor}`).classList.add('heading-highlight');
+            }
+    }
+</script>
+
+<style>
+
+    .heading-link {
+        visibility: hidden;
+        text-decoration: none;
+        padding-left:1rem;
+    }
+
+    .heading-link .google-material-icons {
+        color:#666;
+    }
+
+    .heading-link .google-material-icons:hover {
+        color:#1a73e8;
+    }
+
+    .click-to-copy {
+        font-size:.75rem;
+        color:#666;
+        text-decoration: none;
+        visibility: hidden;
+        vertical-align: middle;
+    }
+
+     
+     
+</style>
+
+
+
+<link rel="stylesheet" href="/scss/homepage.5f7e98206ca4bca837440eeecb329b71f44fedfadc7348b3082392b9b51033b5.css" integrity="sha256-X36YIGykvKg3RA7uyzKbcfRP7frcc0izCCOSubUQM7U=">
+</head>
+
+<body><header>
+  <div class="navContainer">
+    <div class="dora-logo-link">
+      <a href="/"><img src="/img/dora-logo.svg" height="48px" class="dora-logo" alt="DORA"></a>
+    </div>
+    <nav>
+      <ul class="menuLinksDesktop">
+        <li><a href="/publications/" >Publications</a>
+        </li>
+        <li><a href="/research/" >Research</a></li>
+        <li><a href="/capabilities/" >Capabilities</a>
+        </li>
+        <li><a href="/guides/" >Guides</a></li>
+        <li><a href="/quickcheck/" >Quick Check</a>
+        </li>
+        <li id="searchLinkDesktop"><a class="google-material-icons" id="searchIcon"
+            aria-label="Search dora.dev">search</a></li>
+        </li>
+        <li><a href="https://dora.community/" target="_blank">Community&nbsp;&nbsp;<span
+              class="google-material-icons open_in_new">open_in_new</span></a></li>
+      </ul>
+      <div id="searchInputPopover" popover>
+        <div id="searchInputPopoverFields"><form action="/search/" method="get" id="searchForm">
+    <div class="searchInputContainer"><input type="search" name="q" class="searchQuery"
+            placeholder="Search dora.dev for..." required><input type="submit" value="search" id="searchButton"
+            class="searchButton" /></div>
+</form></div>
+      </div>
+      <div class="page-overlay"></div>
+      <label id="hamburgerContainer">
+        <input type="checkbox" id="mobileMenuController" onchange="console.log(this.checked)" />
+        <span class="google-material-icons" aria-label="menu" id="hamburgerIcon">
+          <span class="menu">menu</span>
+          <span class="close">close</span>
+        </span>
+      </label>
+    </nav>
+  </div>
+</header>
+<div class="menuLinksMobile">
+  <ul>
+    <li><a href="/publications/" >Publications</a>
+    </li>
+    <li><a href="/research/" >Research</a></li>
+    <li><a href="/capabilities/" >Capabilities</a>
+    </li>
+    <li><a href="/guides/" >Guides</a></li>
+    <li><a href="/quickcheck/" >Quick Check</a>
+    </li>
+    <li id="searchLinkMobile"><a href="/search/" >Search</a>
+    </li>
+    <li><a href="https://dora.community/" target="_blank">Community&nbsp;&nbsp;<span
+          class="google-material-icons open_in_new">open_in_new</span></a></li>
+  </ul>
+</div>
+
+<script>
+  document.querySelector('#searchIcon').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('#searchInputPopover').showPopover();
+    document.querySelector('#searchInputPopover .searchQuery').focus();
+  })
+</script>
+
+
+<div class="site-banner">
+    <a href="https://cloud.google.com/dora/" target="_blank"
+        >Download the State of AI-assisted Software Development report.</a
+    >
+</div>
+<!-- {{/* BEGIN content for 2025 homepage (dora-2025 theme).  This content does not appear when the default 'dora' theme is used. */}} -->
+
+<div class="homepage-hero">
+  <div class="hero-content">
+    <div class="dora">
+      <div class="letters d_ra"></div>
+      <div class="letters o"></div>
+    </div>
+    <div class="hero-link">
+      <a href="https://cloud.google.com/dora/" target="_blank">
+        <button>Read our latest report</button></a>
+    </div>
+  </div>
+</div>
+
+<div class="homepage-lede">
+  <div class="lede-content-container">
+    <div class="lede-content">
+      <h1>Get better at getting better</h1>
+      <p>
+  DORA is the largest and longest running research program of its kind, that seeks to understand the capabilities that drive software delivery and operations performance. DORA helps teams apply those capabilities, leading to better organizational performance.
+  </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+ 
+    
+
+
+
+
+
+<div class="homepage-feature-container">
+<div class="homepage-feature image-align-right">
+  <div class="content">
+    
+      <h3>our latest report</h3>
+    
+    <h1>State of AI-assisted Software Development</h1>
+    <p>The State of AI-assisted Software Development report reveals AI&rsquo;s primary role is as an amplifier, magnifying an organization&rsquo;s existing strengths and weaknesses. The greatest returns on AI investment come not from the tools themselves, but from a strategic focus on the underlying organizational system.</p>
+<p>This year&rsquo;s research introduces the new DORA AI Capabilities Model, which identifies the key technical and cultural practices that are proven to amplify the positive impacts of AI on performance.</p>
+<br>
+      <a href='https://cloud.google.com/dora' target="_blank">
+        <button class="inverted">Learn more</button>
+      </a></div>
+  <div class="image">
+    <a href='https://cloud.google.com/dora' target="_blank">
+      <img src='/research/2025/dora-report/2025-state-of-ai-assisted-software-development-report.png' alt=''class="stroke">
+    </a>
+  </div>
+</div>
+</div>
+
+<div class="homepage-snipes-wrapper"><div class="homepage-snipes-container"><h1>Resources</h1><div class="homepage-snipes">
+
+
+
+
+
+
+
+
+
+<div class="homepage-snipe">
+  <a href='/research/ai/' target="">
+    <div class="image">
+      <img src='/img/homepage/snipes/genai.png' alt='Generative AI'>
+    </div>
+    
+    <h3>Guides</h3>
+    
+    <div class="text">
+      <h2>Generative AI</h2>
+      <p>
+    Leverage DORA’s research findings to apply a holistic, iterative strategy as you experiment with and adopt emerging AI technologies. Learn how a focus on users can help ensure positive outcomes.
+    </p>
+    </div>
+  </a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="homepage-snipe">
+  <a href='/quickcheck/' target="">
+    <div class="image">
+      <img src='/img/homepage/snipes/quickcheck.png' alt='DORA Quick Check'>
+    </div>
+    
+    <h3>Diagnostic</h3>
+    
+    <div class="text">
+      <h2>DORA Quick Check</h2>
+      <p>
+    Use our quick check tool to discover how you compare to industry peers, identify specific capabilities you can use to improve performance, and make progress on your software delivery goals.
+    </p>
+    </div>
+  </a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="homepage-snipe">
+  <a href='/research/' target="">
+    <div class="image">
+      <img src='/img/homepage/snipes/core.png' alt='DORA Core'>
+    </div>
+    
+    <h3>Framework</h3>
+    
+    <div class="text">
+      <h2>DORA Core</h2>
+      <p>
+    DORA Core represents the most well-established findings across the history and breadth our research program. Use it to guide transformation efforts in your organization.
+    </p>
+    </div>
+  </a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<div class="homepage-snipe">
+  <a href='/awards' target="">
+    <div class="image">
+      <img src='/img/homepage/snipes/award.png' alt='Google Cloud DORA Awards'>
+    </div>
+    
+    <h3>Awards</h3>
+    
+    <div class="text">
+      <h2>Google Cloud DORA Awards</h2>
+      <p>
+    Learn about the accomplishments of all the 2025 Google Cloud DORA Award winners!
+    </p>
+    </div>
+  </a>
+</div>
+
+
+</div></div></div>
+<footer>
+  <div class="container">
+    <div class="logo">
+      <a href="https://cloud.google.com/" target="_blank"><img src="/img/cloud-logo-dark.svg"></a>
+    </div>
+    <div class="links">
+      <a href="/resources/">Resources</a>
+      <a href="/faq/">FAQ</a>
+      <a href="/contact/">Contact Us</a>
+    </div>
+    <div class="search">
+      <form action="/search/" method="get">
+        <input type="text" name="q" placeholder="Search this site">
+      </form>
+    </div>
+    <div class="license">
+      DORA is a program run by Google Cloud. All content on this site is licensed by Google LLC under <a
+        href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>, unless otherwise specified.
+    </div>
+    <div class="socials">
+      <a class="google-material-icons" href="https://www.linkedin.com/company/doradotdev/" target="_blank"
+        aria-label="Follow us on LinkedIn">post_linkedin</a>
+      <a class="google-material-icons" href="https://www.youtube.com/@dora-dev" target="_blank"
+        aria-label="Watch DORA videos on YouTube">post_youtube</a>
+      <a class="google-material-icons" href="https://github.com/dora-team/dora.dev" target="_blank"
+        aria-label="This site's source code">github</a>
+    </div>
+  </div>
+</footer></body>
+
+</html>

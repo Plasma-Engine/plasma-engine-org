@@ -1,0 +1,2 @@
+# Intended output of exa/eza recursive listing
+# Not available at capture time. Use structure.ls.txt and structure.git.txt.
