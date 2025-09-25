@@ -1,0 +1,25 @@
+# Service repositories (managed separately)
+plasma-engine-*/
+
+# Environment
+.env
+.env.*
+.github-token
+.github-config
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
