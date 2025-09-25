@@ -54,8 +54,8 @@ open http://localhost:3000
 | Shared templates & CODEOWNERS | Platform Eng | ✅ Complete | Issue/PR templates, CODEOWNERS in `plasma-engine-shared`. |
 | CI/CD bootstrap | Platform Eng | ✅ Complete | Reusable workflows in `plasma-engine-infra`, CI configured for all services. |
 | Service README documentation | Platform Eng | ✅ Complete | Each service has detailed README with architecture overview. |
-| CodeRabbit integration | Platform Eng | 🟡 Pending | Ready for org-wide activation (ticket PE-05). |
-| Project board setup | Platform Eng | 🟡 Pending | GitHub Projects board to be created (ticket PE-06). |
+| CodeRabbit integration | Platform Eng | ✅ Complete | `.coderabbit.yml` deployed to all repos with template sync script. |
+| Project board setup | Platform Eng | 🟡 Pending | GitHub Projects board to be created (ticket PE-07). |
 
 ## Next Steps
 
@@ -64,11 +64,11 @@ open http://localhost:3000
 - **PE-02**: Shared templates deployed to all repositories
 - **PE-03**: Reusable CI workflows implemented in `plasma-engine-infra`
 - **PE-04**: Service repositories bootstrapped with CI and documentation
+- **PE-05**: CodeRabbit configuration automated across repositories
+- **PE-06**: Repository skeletons seeded with runnable scaffolds
 
 ### 🚀 Ready to Execute
-1. **PE-05**: [Configure CodeRabbit](docs/tickets/phase-0.md#pe-05--coderabbit-configuration-automation) for automated PR reviews
-2. **PE-06**: [Create GitHub Project Board](docs/tickets/phase-0.md#pe-06--program-project-board--automation) for cross-repo tracking
-3. **PE-07**: [Document ADR Process](docs/tickets/phase-0.md#pe-07--adr-process--template) with templates
+1. **PE-07**: [Program Project Board & Automation](docs/tickets/phase-0.md#pe-07--program-project-board--automation)
 
 ### 📝 Phase 1 Planning
 - Phase 1 ticket backlog drafted in `docs/tickets/phase-1.md` (import into GitHub Projects for Sprint 1 & 2).

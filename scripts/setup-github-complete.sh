@@ -203,8 +203,8 @@ create_project_board() {
 verify_coderabbit() {
     echo -e "\n${YELLOW}Verifying CodeRabbit Integration...${NC}"
     
-    # Check if .coderabbit.yaml exists in each repo
-    for repo in plasma-engine-{gateway,research,brand,content,agent,shared,infra}; do
+    # Check if .coderabbit.yaml exists in each repo, including this coordination repo.
+    for repo in plasma-engine-{gateway,research,brand,content,agent,shared,infra,org}; do
         echo -e "  Checking ${repo}..."
         
         # Create CodeRabbit config if it doesn't exist
