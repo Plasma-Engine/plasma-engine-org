@@ -61,5 +61,9 @@ itself end-to-end with minimal human intervention.
 - **Repeated dispatch comments** – The orchestrator only posts when labels
   change. If comments appear on every run, ensure external tooling is not
   clearing the `agent:*` labels between cycles.
+- **Local execution fails with `404`** – The default GitHub CLI token only has
+  access to repositories owned by the authenticated user. Export a PAT or fine-
+  grained token with read/write access to `Plasma-Engine/plasma-engine-org`
+  before running `python3.11 -m scripts.automation.autopilot_orchestrator`.
 
 

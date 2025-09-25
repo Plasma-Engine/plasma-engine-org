@@ -49,5 +49,9 @@
   and GitHub merges run on autopilot. Documented the loop in
   `docs/devops/runbooks/autopilot.md`. Next: configure
   `vars.AUTOPILOT_REQUIRED_STATUS_CONTEXTS` once full CI gates stabilize.
+- Autopilot localisation (2025-09-25): Adjusted orchestrator to reuse
+  `coderabbit_follow_up` without direct dataclass construction, documented PAT
+  requirements for local runs, and cleaned `__pycache__` artifacts after manual
+  Python execution attempts.
 
 
