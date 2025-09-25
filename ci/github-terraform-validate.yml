@@ -1,0 +1,38 @@
+#
+# Explainer: Template GitHub Actions workflow to validate Terraform configuration.
+# Copy this file into .github/workflows/ to activate. It is intentionally not active here.
+# TODO(infra@plasma): Add backend credentials and narrow path filters before activation.
+
+name: terraform-validate
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'infra/terraform/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Terraform fmt
+        working-directory: infra/terraform
+        run: terraform fmt -check -diff
+
+      - name: Terraform init (no backend)
+        working-directory: infra/terraform
+        run: terraform init -backend=false
+
+      - name: Terraform validate
+        working-directory: infra/terraform
+        run: terraform validate
+

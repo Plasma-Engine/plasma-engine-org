@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://plasma-engine.org/docs/exa/schemas/exa-search.schema.json",
+  "$comment": "Source: https://docs.exa.ai/reference/search (TODO: verify exact URL via Rube MCP)",
+  "title": "Exa Search Request (Placeholder)",
+  "description": "Placeholder schema for Exa Search request body. Replace with authoritative fields via Rube MCP.",
+  "type": "object",
+  "properties": {
+    "query": { "type": "string", "description": "Search query string." },
+    "numResults": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 },
+    "includeDomains": { "type": "array", "items": { "type": "string", "format": "uri" } },
+    "excludeDomains": { "type": "array", "items": { "type": "string", "format": "uri" } },
+    "useAutoprompt": { "type": "boolean", "default": true }
+  },
+  "required": ["query"],
+  "additionalProperties": true,
+  "$comment:note": "TODO(research@plasma): Confirm supported filters, sorting, and auth headers."
+}
+

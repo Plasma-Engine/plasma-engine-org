@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://plasma-engine.org/docs/exa/schemas/exa-content.schema.json",
+  "$comment": "Source: https://docs.exa.ai/reference/content (TODO: verify via Rube MCP)",
+  "title": "Exa Content Retrieval Request (Placeholder)",
+  "description": "Placeholder schema for content retrieval request (by id or URL).",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "description": "Document identifier (if supported)." },
+    "url": { "type": "string", "format": "uri", "description": "Target URL (if supported)." },
+    "includeHtml": { "type": "boolean", "default": false },
+    "includeExtractedText": { "type": "boolean", "default": true }
+  },
+  "oneOf": [
+    { "required": ["id"] },
+    { "required": ["url"] }
+  ],
+  "additionalProperties": true,
+  "$comment:note": "TODO(research@plasma): Confirm fields and response shape (HTML, text, metadata)."
+}
+
