@@ -1,0 +1,7 @@
+{
+  "query": "site:example.com plasma engine",
+  "limit": 10,
+  "filters": {
+    "language": "en"
+  }
+}

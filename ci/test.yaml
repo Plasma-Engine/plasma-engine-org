@@ -1,0 +1,20 @@
+# Test Workflow
+# Purpose: Run unit/integration tests with coverage thresholds
+# Inputs: test matrix, environment variables
+# Outputs: test reports, coverage artifacts
+# References: docs/devops/playbooks/README.md
+
+version: "1"
+stages:
+  - test
+
+jobs:
+  test:
+    stage: test
+    steps:
+      - name: Run tests
+        run: |
+          echo "# TODO: python pytest, node vitest, etc."
+      - name: Upload reports
+        run: |
+          echo "# TODO: upload to artifact store"

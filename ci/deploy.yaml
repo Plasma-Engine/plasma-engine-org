@@ -1,0 +1,20 @@
+# Deploy Workflow
+# Purpose: Deploy versioned artifacts to target environments with gates
+# Inputs: artifact versions, environment, credentials
+# Outputs: deployed services, deployment logs
+# References: docs/devops/playbooks/README.md
+
+version: "1"
+stages:
+  - deploy
+
+jobs:
+  deploy:
+    stage: deploy
+    steps:
+      - name: Plan infrastructure changes (Terraform)
+        run: |
+          echo "# TODO: terraform init && terraform plan"
+      - name: Apply changes
+        run: |
+          echo "# TODO: terraform apply -auto-approve"

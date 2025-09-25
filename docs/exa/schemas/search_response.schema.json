@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Exa Search Response (Stub)",
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "snippet": { "type": "string" },
+          "score": { "type": "number" }
+        },
+        "required": ["title", "url"]
+      }
+    },
+    "nextPageToken": { "type": ["string", "null"] }
+  },
+  "required": ["results"],
+  "additionalProperties": true
+}
