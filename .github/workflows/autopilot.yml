@@ -1,0 +1,53 @@
+name: autopilot
+
+on:
+  schedule:
+    # Run every hour so agents pick up fresh work and approved changes merge promptly.
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Set to 'true' to observe planned actions without mutating GitHub state"
+        required: false
+        default: "false"
+      target_branch:
+        description: "Branch that autopilot should merge into"
+        required: false
+        default: "main"
+      merge_method:
+        description: "GitHub merge method (merge, squash, or rebase)"
+        required: false
+        default: "squash"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Execute autopilot orchestrator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          CURSOR_AGENT_CLASSIFIERS: ${{ vars.CURSOR_AGENT_CLASSIFIERS }}
+          CODERABBIT_LOGINS: ${{ vars.CODERABBIT_LOGINS }}
+          AUTOPILOT_TARGET_BRANCH: ${{ inputs.target_branch || 'main' }}
+          AUTOPILOT_MERGE_METHOD: ${{ inputs.merge_method || 'squash' }}
+          AUTOPILOT_DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          AUTOPILOT_REQUIRED_STATUS_CONTEXTS: ${{ vars.AUTOPILOT_REQUIRED_STATUS_CONTEXTS }}
+        run: |
+          echo "Starting autopilot orchestration run"
+          python scripts/automation/autopilot_orchestrator.py
+
+

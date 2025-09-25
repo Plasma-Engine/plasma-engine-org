@@ -44,4 +44,10 @@
    - Platform: Cloud provider choice and org/account IDs, naming conventions, regions.
    - Research: Confirm Exa API versions/models to mirror.
 
+- Autopilot upgrade (2025-09-25): Added `.github/workflows/autopilot.yml` and
+  `scripts/automation/autopilot_orchestrator.py` so Cursor agents, CodeRabbit,
+  and GitHub merges run on autopilot. Documented the loop in
+  `docs/devops/runbooks/autopilot.md`. Next: configure
+  `vars.AUTOPILOT_REQUIRED_STATUS_CONTEXTS` once full CI gates stabilize.
+
 
