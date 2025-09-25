@@ -1,0 +1,50 @@
+# Explainer: Reusable Terraform CI workflow.
+# Purpose: fmt, init (no backend creds), validate, tflint, tfsec.
+# Inputs: working-directory
+# Links: docs/devops/playbooks/terraform.md
+
+name: terraform-ci
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Terraform root directory
+        required: false
+        type: string
+        default: '.'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+
+      - name: Terraform fmt
+        working-directory: ${{ inputs.working-directory }}
+        run: terraform fmt -recursive -check
+
+      - name: Terraform init (no backend)
+        working-directory: ${{ inputs.working-directory }}
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        working-directory: ${{ inputs.working-directory }}
+        run: terraform validate
+
+      - name: TFLint
+        uses: terraform-linters/setup-tflint@v4
+      - run: tflint -f compact
+        working-directory: ${{ inputs.working-directory }}
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: ${{ inputs.working-directory }}
+

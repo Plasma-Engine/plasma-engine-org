@@ -1,0 +1,11 @@
+{
+  "_explainer": "Placeholder schema for Exa Search API request. Replace via Rube MCP with authoritative schema.",
+  "type": "object",
+  "properties": {
+    "query": { "type": "string" },
+    "num_results": { "type": "integer", "minimum": 1 },
+    "filters": { "type": "object" }
+  },
+  "required": ["query"],
+  "additionalProperties": true
+}

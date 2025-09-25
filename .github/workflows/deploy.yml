@@ -1,0 +1,48 @@
+# Explainer: Reusable deployment workflow.
+# Purpose: Gate via environments and invoke repo-specific deployment scripts (Terraform/Helm/etc.).
+# Inputs: environment, working-directory, deploy-script
+# Links: docs/devops/runbooks/rollback.md, docs/devops/playbooks/ci-cd.md
+
+name: deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      working-directory:
+        type: string
+        required: false
+        default: '.'
+      deploy-script:
+        type: string
+        required: false
+        default: './scripts/deploy.py'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deploy dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Execute deploy script
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          if [ -f ${{ inputs.deploy-script }} ]; then python ${{ inputs.deploy-script }} --env ${{ inputs.environment }}; else echo 'Deploy script missing'; fi
+
