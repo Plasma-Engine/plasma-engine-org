@@ -1,0 +1,55 @@
+# Explainer: Reusable Node/TypeScript CI workflow for Plasma Engine repos.
+# Purpose: Install deps, lint (eslint), test (vitest/jest), and cache node modules.
+# Inputs: node-version, working-directory, test-command
+# Outputs: junit.xml and coverage when available
+# Links: docs/devops/playbooks/ci-cd.md
+
+name: node-ci
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node version
+        required: false
+        type: string
+        default: '20'
+      working-directory:
+        description: Directory
+        required: false
+        type: string
+        default: '.'
+      test-command:
+        description: NPM script to run tests
+        required: false
+        type: string
+        default: 'test'
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci
+        # Output: node_modules cache
+
+      - name: Lint (eslint)
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          if [ -f ./node_modules/.bin/eslint ]; then npm run lint --if-present; else echo 'eslint not configured'; fi
+
+      - name: Run tests
+        working-directory: ${{ inputs.working-directory }}
+        run: npm run ${{ inputs.test-command }} --if-present
+
