@@ -113,6 +113,14 @@ open http://localhost:3000
 - [DevOps Playbook](docs/devops-process.md)
 - [Makefile Commands](Makefile) - `make help` for all commands
 
+### Standards
+- [Python Guidelines](docs/standards/python-guidelines.md)
+- [TypeScript Guidelines](docs/standards/typescript-guidelines.md)
+- [Testing Strategy & Gates](docs/standards/testing-strategy.md)
+- [Branching & Release Strategy](docs/standards/branching-and-release.md)
+- [Security & Compliance](docs/standards/security-and-compliance.md)
+- [Incident Response Runbook](docs/standards/incident-response-runbook.md)
+
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
