@@ -1,0 +1,28 @@
+{
+  "title": "Exa Search API Schema (Placeholder)",
+  "description": "Placeholder schema capturing expected fields for Exa search.\nTODO: Owner=Research integrate via Rube MCP and replace with authoritative schema.",
+  "type": "object",
+  "properties": {
+    "query": {
+      "type": "string",
+      "description": "User query string for web search."
+    },
+    "num_results": {
+      "type": "integer",
+      "description": "Max number of results to return. TODO: Confirm Exa default/limits.",
+      "minimum": 1,
+      "maximum": 50,
+      "default": 10
+    },
+    "filters": {
+      "type": "object",
+      "description": "Optional filter object. TODO: Enumerate allowed filters (domains, time range, etc.).",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "additionalProperties": false,
+  "$comment": "See https://docs.exa.ai/ for up-to-date parameters."
+}
