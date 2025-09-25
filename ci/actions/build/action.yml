@@ -1,0 +1,27 @@
+ # Composite Action: build
+ # Purpose: Run basic formatting/linting and language-specific build hooks
+ # Inputs: none currently
+ # Links: docs/devops/playbooks/build.md
+ name: build
+ description: "Run basic formatting/linting and language-specific build hooks"
+ runs:
+   using: composite
+   steps:
+     - shell: bash
+       name: Python format (black) and lint (ruff)
+       run: |
+         set -e
+         python -m pip install --upgrade pip >/dev/null 2>&1 || true
+         pip install black ruff >/dev/null 2>&1 || true
+         black --check . || true # TODO tighten
+         ruff check . || true    # TODO tighten
+     - shell: bash
+       name: Node install and lint placeholder
+       run: |
+         set -e
+         if [ -f package.json ]; then
+           npm ci || npm install
+           npx --yes eslint . || true # TODO add config
+         else
+           echo "No package.json found; skipping Node build"
+         fi

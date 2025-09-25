@@ -1,0 +1,30 @@
+ # Composite Action: security
+ # Purpose: Run lightweight security checks for Python/Node and container images (placeholders)
+ # Inputs: none currently
+ # Links: docs/devops/playbooks/security.md
+ name: security
+ description: "Run lightweight security checks"
+ runs:
+   using: composite
+   steps:
+     - shell: bash
+       name: Python security (bandit placeholder)
+       run: |
+         set -e
+         python -m pip install --upgrade pip >/dev/null 2>&1 || true
+         pip install bandit >/dev/null 2>&1 || true
+         bandit -q -r . || true # TODO tighten policy and paths
+     - shell: bash
+       name: Node audit
+       run: |
+         set -e
+         if [ -f package.json ]; then
+           npm ci || npm install
+           npm audit --audit-level=moderate || true # TODO parametrize
+         else
+           echo "No package.json found; skipping npm audit"
+         fi
+     - shell: bash
+       name: Container scan placeholder
+       run: |
+         echo "# TODO: integrate trivy/grype with policy gates via Rube MCP"
