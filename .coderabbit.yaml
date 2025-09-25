@@ -1,0 +1,40 @@
+# CodeRabbit Configuration
+# Documentation: https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: "en-US"
+early_access: false
+
+reviews:
+  # Enable high-quality reviews for the Plasma Engine project
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  
+  # Path filters for focused reviews
+  path_filters:
+    - "!**/*.md"
+    - "!**/package-lock.json"
+    - "!**/yarn.lock"
+  
+  # Review tools configuration
+  tools:
+    github-actions:
+      enabled: true
+    ruff:
+      enabled: true
+    eslint:
+      enabled: true
+    terraform:
+      enabled: true
+    markdownlint:
+      enabled: false
+
+# Enable auto-reply for review comments
+auto_reply:
+  enabled: true
+
+# Chat configuration
+chat:
+  auto_reply: true

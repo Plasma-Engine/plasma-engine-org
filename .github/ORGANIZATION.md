@@ -1,3 +1,35 @@
+# Plasma Engine Organisation Guide
+
+This document summarises the mission, repositories, and governance model of
+the Plasma Engine GitHub organisation. It is referenced from the root README
+so newcomers have a single place to understand how codebases relate.
+
+## Mission
+
+Accelerate research automation, brand intelligence, and content operations for
+fintech partners through reliable AI-first services.
+
+## Repositories
+
+- `plasma-engine-gateway` — API gateway and GraphQL federation
+- `plasma-engine-research` — GraphRAG ingestion and retrieval
+- `plasma-engine-brand` — Brand monitoring and analytics
+- `plasma-engine-content` — Content automation and publishing
+- `plasma-engine-agent` — MCP-enabled agent workflows
+- `plasma-engine-shared` — Shared libraries, templates, and docs
+- `plasma-engine-infra` — Infrastructure-as-code and CI/CD workflows
+
+## Governance
+
+- Architecture decisions follow the ADR process documented in `docs/adrs`.
+- Each repository enforces CodeRabbit reviews plus at least one human approval.
+- GitHub Project boards coordinate work across phases and sprints.
+
+## Getting Help
+
+- Slack: `#plasma-engine-devops`
+- Support: support@plasma-engine.org
+- Security incidents: follow the process in `SECURITY.md`
 # Plasma Engine Organization
 
 ## 🚀 Organization Overview

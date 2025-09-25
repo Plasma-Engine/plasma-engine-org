@@ -1,3 +1,26 @@
+# Plasma Engine
+
+Welcome to the Plasma Engine organisation. We build AI-native tooling for
+research automation, brand intelligence, and content orchestration.
+
+## Quick Links
+
+- 📚 [Project Overview](../ORGANIZATION.md)
+- 🧭 [Architecture Decision Records](../../docs/adrs)
+- 🚀 [Phase 1 Backlog](../../docs/tickets/phase-1.md)
+- 🛠️ [Development Handbook](../../plasma-engine-shared/docs/development-handbook.md)
+
+## Getting Started
+
+1. Clone repositories via `make clone-all`
+2. Start local infrastructure with `make start-infra`
+3. Launch individual services using the commands documented in each README
+
+## Community
+
+- Slack: `#plasma-engine-devops`
+- Discussions: coming soon
+- Security disclosures: see `SECURITY.md`
 # 🚀 Plasma Engine
 
 > **Enterprise AI Platform for Research, Brand Intelligence, and Content Automation**
