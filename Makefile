@@ -175,6 +175,18 @@ clean: ## Clean all build artifacts and dependencies
 	@find . -type d -name "build" -exec rm -rf {} + 2>/dev/null || true
 	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
 
+.PHONY: onboard
+onboard: ## Developer onboarding helper
+	./scripts/dev-onboard.sh
+
+.PHONY: validate
+validate: ## Run local validation (formatters/linters/tests placeholders)
+	./scripts/dev-local-validate.sh
+
+.PHONY: deploy-scripts
+deploy-scripts: ## Use scripts/deploy.sh to orchestrate deployment (placeholder)
+	./scripts/deploy.sh $(env)
+
 .PHONY: logs
 logs: ## Show logs for all services
 	cd plasma-engine-infra && docker-compose logs -f

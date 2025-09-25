@@ -1,0 +1,62 @@
+# Explainer: Placeholder OpenAPI schema for Exa. Replace with the exact
+# upstream schema via Rube MCP. Keep comments noting source and version.
+
+openapi: 3.0.3
+info:
+  title: Exa API (Placeholder)
+  version: 0.0.0-placeholder
+  description: |
+    Placeholder OpenAPI for Exa endpoints. Do not trust for production.
+    # TODO: Replace with official schema and record provenance.
+servers:
+  - url: https://api.exa.example.invalid
+    description: Placeholder server URL
+paths:
+  /search:
+    get:
+      summary: Search (placeholder)
+      description: Placeholder search endpoint.
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+  /documents:
+    post:
+      summary: Ingest document (placeholder)
+      description: Placeholder ingestion endpoint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+      responses:
+        '202':
+          description: Accepted
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
+

@@ -1,0 +1,86 @@
+# Explainer: Monorepo CI pipeline covering lint → test → build → security → package → (no-op) deploy → rollback.
+# Each step is annotated with purpose, inputs, and outputs, and links to playbooks.
+
+name: CI
+
+on:
+  push:
+    branches: [ "main", "release/**" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  lint-and-format:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Terraform fmt (check)
+        run: |
+          terraform -version || true # purpose: report version if installed
+          terraform fmt -recursive -check || true # outputs non-zero if diffs; tolerated for now
+        # Ref: docs/devops/playbooks/observability.md
+
+  tests:
+    name: Unit Tests (placeholder)
+    runs-on: ubuntu-latest
+    needs: [ lint-and-format ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python placeholder tests
+        run: |
+          echo "No tests found in this workspace; placeholder stage." 
+        # Ref: docs/devops-process.md
+
+  build:
+    name: Build Artifacts (placeholder)
+    runs-on: ubuntu-latest
+    needs: [ tests ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build placeholder
+        run: echo "No build targets; generate docs artifacts if any."
+
+  security:
+    name: Security Scans (placeholder)
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependency and IaC scan placeholders
+        run: |
+          echo "Run trivy, pip-audit, npm audit when code present."
+        # Ref: docs/devops-process.md
+
+  package:
+    name: Package (placeholder)
+    runs-on: ubuntu-latest
+    needs: [ security ]
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "No packaging at this stage."
+
+  deploy:
+    name: Deploy (noop)
+    runs-on: ubuntu-latest
+    needs: [ package ]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: staging
+      url: https://example.invalid # TODO: replace with gateway URL
+    steps:
+      - name: No-op deploy
+        run: echo "Deployment gated until cloud provider is selected."
+        # Ref: docs/devops/release/release-checklist.md
+
+  rollback:
+    name: Rollback (manual)
+    runs-on: ubuntu-latest
+    needs: [ deploy ]
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: No-op rollback
+        run: echo "Rollback procedure documented in runbooks; automation to be added."
+
