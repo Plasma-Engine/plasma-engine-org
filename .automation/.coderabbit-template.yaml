@@ -1,0 +1,42 @@
+# CodeRabbit Configuration
+# Documentation: https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: "en-US"
+early_access: false
+
+reviews:
+  high_level_summary: true
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+  tools:
+    ruff:
+      enabled: true
+    mypy:
+      enabled: true
+    eslint:
+      enabled: true
+    prettier:
+      enabled: true
+  path_filters:
+    - "!**/*.md"
+    - "!**/*.txt"
+    - "!**/package-lock.json"
+    - "!**/yarn.lock"
+  instructions: |
+    - Focus on correctness, security, and performance impacts
+    - Verify logging, telemetry, and error handling paths
+    - Require tests or justify gaps in coverage
+    - Validate API contracts, schemas, and migrations
+    - Flag missing docs, runbooks, or logging
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
