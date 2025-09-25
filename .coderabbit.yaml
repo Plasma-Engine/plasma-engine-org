@@ -1,0 +1,22 @@
+language: en-US
+reviews:
+  profile: strict
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    include:
+      - "docs/**"
+      - ".github/workflows/**"
+      - "**/*.tf"
+      - "**/helm/**"
+    exclude:
+      - "**/*.md"
+      - "**/LICENSE"
+      - "**/*.png"
+  comments:
+    suggest_inline_improvements: true
+    max_comments: 50
+  security_scan: true
+
