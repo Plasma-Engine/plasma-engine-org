@@ -8,10 +8,12 @@ Actions:
 Commands Run:
 - git status -sb (confirm branch and cleanliness)
 - git rev-parse --show-toplevel (confirm repo root)
+ - scripts/dev-validate.sh (local fmt/lint/test harness)
 
 Outcomes:
 - Repo is on branch `cursor/implement-full-devops-stack-and-documentation-f0f8`; working tree clean at start.
 - Terraform modules created; provider selection is pending.
+ - Validation summary: terraform/ruff/black/pytest not installed locally; eslint ran but missing new flat config. No blocking failures because validations are best-effort until toolchains are installed.
 
 Unresolved / TODOs:
 - # TODO: Select cloud provider(s) and configure remote state backend.
@@ -19,6 +21,7 @@ Unresolved / TODOs:
 - # TODO: Add CI/CD reusable workflows and calling pipelines.
 - # TODO: Add runbooks, release checklists, and playbooks aligned with automation.
 - # TODO: Integrate Rube MCP for external lookups; MCP not configured in this workspace.
+ - # TODO: Install local toolchains (terraform, ruff, black, pytest, node) or rely on CI containers.
 
 Next Actions:
 - Add reusable CI workflows under `ci/` and `.github/workflows` callers.

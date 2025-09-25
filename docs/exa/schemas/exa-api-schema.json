@@ -1,0 +1,19 @@
+{
+  "_comment": "Placeholder schema. Replace with authoritative Exa OpenAPI/JSON schema via Rube MCP.",
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Exa API",
+    "version": "0.0.0-placeholder"
+  },
+  "paths": {
+    "/v1/search": {
+      "get": {
+        "summary": "Search documents",
+        "parameters": [
+          {"name": "q", "in": "query", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {"200": {"description": "OK"}}
+      }
+    }
+  }
+}

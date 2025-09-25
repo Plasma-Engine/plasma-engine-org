@@ -1,0 +1,20 @@
+## Explainer: Lints and tests Python code across the repository using a reusable workflow.
+## References: docs/devops/playbooks/ci-cd.md
+name: CI - Python Lint & Test
+
+on:
+  push:
+    paths:
+      - '**/*.py'
+      - 'ci/reusable/lint-test-python.yml'
+  pull_request:
+    paths:
+      - '**/*.py'
+      - 'ci/reusable/lint-test-python.yml'
+
+jobs:
+  lint-test:
+    uses: ./.github/workflows/../ci/reusable/lint-test-python.yml
+    with:
+      python-version: '3.11'
+
