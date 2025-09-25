@@ -1,0 +1,20 @@
+ # Composite Action: deploy
+ # Purpose: Deploy artifacts to selected environment via provider-specific CLIs/APIs
+ # Inputs: environment, service (optional)
+ # Links: docs/devops/playbooks/deploy.md
+ name: deploy
+ description: "Deploy artifacts"
+ inputs:
+   environment:
+     description: Target environment (dev|staging|prod)
+     required: true
+   service:
+     description: Service name to deploy (optional)
+     required: false
+ runs:
+   using: composite
+   steps:
+     - shell: bash
+       name: Deployment placeholder
+       run: |
+         echo "# TODO: implement deployment for environment=${{ inputs.environment }} service=${{ inputs.service }}"
