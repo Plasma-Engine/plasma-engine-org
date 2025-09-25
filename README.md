@@ -54,8 +54,8 @@ open http://localhost:3000
 | Shared templates & CODEOWNERS | Platform Eng | ✅ Complete | Issue/PR templates, CODEOWNERS in `plasma-engine-shared`. |
 | CI/CD bootstrap | Platform Eng | ✅ Complete | Reusable workflows in `plasma-engine-infra`, CI configured for all services. |
 | Service README documentation | Platform Eng | ✅ Complete | Each service has detailed README with architecture overview. |
-| CodeRabbit integration | Platform Eng | 🟡 Pending | Ready for org-wide activation (ticket PE-05). |
-| Project board setup | Platform Eng | 🟡 Pending | GitHub Projects board to be created (ticket PE-06). |
+| CodeRabbit integration | Platform Eng | ✅ Complete | `.coderabbit.yaml` distributed to every service repository. |
+| Project board setup | Platform Eng | ✅ Complete | Org project **“Plasma Engine – Automation Streams”** created for Sprint planning. |
 
 ## Next Steps
 
@@ -64,14 +64,17 @@ open http://localhost:3000
 - **PE-02**: Shared templates deployed to all repositories
 - **PE-03**: Reusable CI workflows implemented in `plasma-engine-infra`
 - **PE-04**: Service repositories bootstrapped with CI and documentation
+- **PE-05**: CodeRabbit configuration automated across services
+- **PE-06**: Org-level GitHub Project bootstrapped for roadmap tracking
 
 ### 🚀 Ready to Execute
-1. **PE-05**: [Configure CodeRabbit](docs/tickets/phase-0.md#pe-05--coderabbit-configuration-automation) for automated PR reviews
-2. **PE-06**: [Create GitHub Project Board](docs/tickets/phase-0.md#pe-06--program-project-board--automation) for cross-repo tracking
-3. **PE-07**: [Document ADR Process](docs/tickets/phase-0.md#pe-07--adr-process--template) with templates
+1. **PE-07**: [Document ADR Process](docs/tickets/phase-0.md#pe-07--adr-process--template) with templates
+2. Configure GitHub Actions secrets for staging/production environments
+3. Wire CodeRabbit PR checks to CODEOWNERS review flow
 
 ### 📝 Phase 1 Planning
 - Phase 1 ticket backlog drafted in `docs/tickets/phase-1.md` (import into GitHub Projects for Sprint 1 & 2).
+- GitHub issues generated for every Phase 1 ticket (`scripts/create-phase1-issues.sh`).
 - Standard issue template published at `docs/tickets/issue-template.md` (reference before opening new tickets).
 - Service focus areas:
   - Gateway: Authentication, GraphQL federation
@@ -79,6 +82,18 @@ open http://localhost:3000
   - Brand: Social monitoring, sentiment analysis
   - Content: AI generation, publishing workflows
   - Agent: MCP integration, browser automation
+
+## ⚙️ GitHub Automation Toolkit
+
+Automation scripts live under `scripts/` to keep repositories and the organization in sync:
+
+- `setup-labels.sh` — applies standardized labels (priority, type, service, phase, AI) to every repository.
+- `create-phase1-issues.sh` — converts Phase 1 ticket specs into GitHub issues with consistent metadata.
+- `setup-branch-protection.sh` — enforces PR reviews, CODEOWNERS approval, and linear history on all `main` branches.
+- `setup-coderabbit.sh` — verifies CodeRabbit configuration and can scaffold template branches with `--apply`.
+- `setup-github-complete.sh` — orchestrates the above scripts plus organization settings and project creation.
+
+> **Tip:** Run `gh auth login --scopes repo,workflow,admin:org` before executing the toolkit. The scripts are idempotent and safe to re-run.
 
 ## 📦 Repository Links
 
