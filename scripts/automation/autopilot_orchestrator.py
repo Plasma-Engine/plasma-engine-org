@@ -28,6 +28,7 @@ import os
 import sys
 import time
 from dataclasses import dataclass, field
+from types import SimpleNamespace
 from typing import Any, Iterable, TypedDict
 
 from scripts.automation import coderabbit_follow_up, cursor_dispatch
@@ -491,7 +492,7 @@ def run() -> None:
     # Step 1: Reuse the CodeRabbit follow-up logic so labels are fresh and
     # any pending reviews are re-requested before we attempt merges.
     # ------------------------------------------------------------------
-    coderabbit_config = coderabbit_follow_up.Configuration(
+    coderabbit_config = SimpleNamespace(
         owner=settings.owner,
         repo=settings.repo,
         token=settings.token,
