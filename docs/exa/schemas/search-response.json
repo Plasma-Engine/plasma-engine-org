@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Exa Search Response (Placeholder)",
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "score": { "type": "number" }
+        },
+        "required": ["id", "url"]
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "required": ["results"],
+  "description": "TODO: Replace with authoritative fields from Exa docs via MCP"
+}

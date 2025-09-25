@@ -1,0 +1,27 @@
+openapi: 3.0.3
+info:
+  title: Exa API (Stub)
+  version: 0.0.1
+  description: |
+    Placeholder OpenAPI spec. Replace with official spec once retrieved via Rube MCP.
+servers:
+  - url: https://api.exa.ai
+paths:
+  /v1/search:
+    post:
+      summary: Search
+      description: Placeholder search endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                size:
+                  type: integer
+      responses:
+        '200':
+          description: OK

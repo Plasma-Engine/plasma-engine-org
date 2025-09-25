@@ -1,0 +1,17 @@
+{
+  "$schema": "https://rube.mcp/schemas/config.v1.json",
+  "explain": "Template for Rube MCP configuration. Fill credentials and endpoints to enable MCP-first lookups.",
+  "providers": {
+    "exa": {
+      "base_url": "https://api.exa.ai",
+      "api_key": "${EXA_API_KEY}",
+      "timeout_seconds": 30,
+      "notes": "TODO: Confirm endpoints and scopes from official Exa developer docs"
+    }
+  },
+  "policies": {
+    "prefer_mcp": true,
+    "fallback_to_local": true,
+    "audit_log": "logs/mcp-audit.log"
+  }
+}

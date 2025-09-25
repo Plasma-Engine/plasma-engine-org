@@ -1,0 +1,41 @@
+name: Release
+
+# Orchestrates tagging, changelog, and image publication.
+# TODO: Connect to protected environments and require approvals.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g., v1.2.3)'
+        required: true
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  tag_and_publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create tag (manual)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git tag ${{ inputs.version }}
+          git push origin ${{ inputs.version }}
+      - name: Generate changelog
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+      - name: Build and push gateway image
+        if: ${{ hashFiles('plasma-engine-gateway/Dockerfile') != '' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: plasma-engine-gateway
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/plasma-engine-gateway:${{ github.ref_name }}
+

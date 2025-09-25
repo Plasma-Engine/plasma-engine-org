@@ -1,0 +1,6 @@
+{
+  "query": "example search query",
+  "size": 5,
+  "filters": {},
+  "notes": "TODO: Replace with confirmed schema from Exa docs"
+}
