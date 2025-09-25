@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>DevOps Guidance - DevOps Guidance</title><meta name="viewport" content="width=device-width,initial-scale=1" /><meta name="assets_root" content="/assets" /><meta name="target_state" content="devops-guidance" /><meta name="default_state" content="devops-guidance" /><link rel="icon" type="image/ico" href="/assets/images/favicon.ico" /><link rel="shortcut icon" type="image/ico" href="/assets/images/favicon.ico" /><link rel="canonical" href="https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/devops-guidance.html" /><meta name="description" content="The AWS Well-Architected Framework DevOps Guidance offers a structured approach that organizations of all sizes can follow to cultivate a high-velocity, security-focused culture capable of delivering substantial business value using modern technologies and DevOps best practices." /><meta name="deployment_region" content="IAD" /><meta name="product" content="DevOps Guidance" /><meta name="guide" content="AWS Well-Architected" /><meta name="abstract" content="The AWS Well-Architected Framework DevOps Guidance offers a structured approach that organizations of all sizes can follow to cultivate a high-velocity, security-focused culture capable of delivering substantial business value using modern technologies and DevOps best practices." /><meta name="guide-locale" content="en_us" /><meta name="tocs" content="toc-contents.json" /><link rel="canonical" href="https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/devops-guidance.html" /><link rel="alternative" href="https://docs.aws.amazon.com/id_id/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="id-id" /><link rel="alternative" href="https://docs.aws.amazon.com/id_id/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="id" /><link rel="alternative" href="https://docs.aws.amazon.com/de_de/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="de-de" /><link rel="alternative" href="https://docs.aws.amazon.com/de_de/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="de" /><link rel="alternative" href="https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="en-us" /><link rel="alternative" href="https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="en" /><link rel="alternative" href="https://docs.aws.amazon.com/es_es/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="es-es" /><link rel="alternative" href="https://docs.aws.amazon.com/es_es/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="es" /><link rel="alternative" href="https://docs.aws.amazon.com/fr_fr/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="fr-fr" /><link rel="alternative" href="https://docs.aws.amazon.com/fr_fr/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="fr" /><link rel="alternative" href="https://docs.aws.amazon.com/it_it/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="it-it" /><link rel="alternative" href="https://docs.aws.amazon.com/it_it/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="it" /><link rel="alternative" href="https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="ja-jp" /><link rel="alternative" href="https://docs.aws.amazon.com/ja_jp/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="ja" /><link rel="alternative" href="https://docs.aws.amazon.com/ko_kr/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="ko-kr" /><link rel="alternative" href="https://docs.aws.amazon.com/ko_kr/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="ko" /><link rel="alternative" href="https://docs.aws.amazon.com/pt_br/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="pt-br" /><link rel="alternative" href="https://docs.aws.amazon.com/pt_br/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="pt" /><link rel="alternative" href="https://docs.aws.amazon.com/zh_cn/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="zh-cn" /><link rel="alternative" href="https://docs.aws.amazon.com/zh_tw/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="zh-tw" /><link rel="alternative" href="https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/devops-guidance.html" hreflang="x-default" /><meta name="feedback-folder" content="897c6ffe-3c12-4691-9c85-dc23b20eabd4" /><meta name="this_doc_product" content="DevOps Guidance" /><meta name="this_doc_guide" content="AWS Well-Architected" /><head xmlns="http://www.w3.org/1999/xhtml"> <script defer="" src="/assets/r/awsdocs-doc-page.2.0.0.js"></script><link href="/assets/r/awsdocs-doc-page.2.0.0.css" rel="stylesheet"/></head>
+<script defer="" id="awsc-panorama-bundle" type="text/javascript" src="https://prod.pa.cdn.uis.awsstatic.com/panorama-nav-init.js" data-config="{'appEntity':'aws-documentation','region':'us-east-1','service':'wellarchitected'}"></script><meta id="panorama-serviceSubSection" value="AWS Well-Architected" /><meta id="panorama-serviceConsolePage" value="DevOps Guidance" /></head><body class="awsdocs awsui"><div class="awsdocs-container"><awsdocs-header></awsdocs-header><awsui-app-layout id="app-layout" class="awsui-util-no-gutters" ng-controller="ContentController as $ctrl" header-selector="awsdocs-header" navigation-hide="false" navigation-width="$ctrl.navWidth" navigation-open="$ctrl.navOpen" navigation-change="$ctrl.onNavChange($event)" tools-hide="$ctrl.hideTools" tools-width="$ctrl.toolsWidth" tools-open="$ctrl.toolsOpen" tools-change="$ctrl.onToolsChange($event)"><div id="guide-toc" dom-region="navigation"><awsdocs-toc></awsdocs-toc></div><div id="main-column" dom-region="content" tabindex="-1"><awsdocs-view class="awsdocs-view"><div id="awsdocs-content"><head><title>DevOps Guidance - DevOps Guidance</title><meta name="pdf" content="/pdfs/wellarchitected/latest/devops-guidance/devops-guidance.pdf#devops-guidance" /><meta name="rss" content="devops-guidance.rss" /><meta name="forums" content="https://repost.aws/topics/TA5g9gZfzuQoWLsZ3wxihrgw" /><meta name="feedback" content="https://docs.aws.amazon.com/forms/aws-doc-feedback?feedback_destination_id=897c6ffe-3c12-4691-9c85-dc23b20eabd4&amp;topic_url=https://docs.aws.amazon.com/en_us/wellarchitected/latest/devops-guidance/devops-guidance.html" /><meta name="feedback-yes" content="feedbackyes.html?topic_url=https://docs.aws.amazon.com/en_us/wellarchitected/latest/devops-guidance/devops-guidance.html" /><meta name="feedback-no" content="feedbackno.html?topic_url=https://docs.aws.amazon.com/en_us/wellarchitected/latest/devops-guidance/devops-guidance.html" /><meta name="keywords" content="devops,devops guidance,well-architected,whitepaper" /><script type="application/ld+json">
+{
+    "@context" : "https://schema.org",
+    "@type" : "BreadcrumbList",
+    "itemListElement" : [
+      {
+        "@type" : "ListItem",
+        "position" : 1,
+        "name" : "AWS",
+        "item" : "https://aws.amazon.com"
+      },
+      {
+        "@type" : "ListItem",
+        "position" : 2,
+        "name" : "AWS Well-Architected",
+        "item" : "https://aws.amazon.com/architecture/well-architected/"
+      },
+      {
+        "@type" : "ListItem",
+        "position" : 3,
+        "name" : "AWS Well-Architected",
+        "item" : "https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance"
+      },
+      {
+        "@type" : "ListItem",
+        "position" : 4,
+        "name" : "DevOps Guidance",
+        "item" : "https://docs.aws.amazon.com/wellarchitected/latest/devops-guidance/devops-guidance.html"
+      }
+    ]
+}
+</script></head><body><div id="main"><div style="display: none"><a href="/pdfs/wellarchitected/latest/devops-guidance/devops-guidance.pdf#devops-guidance" target="_blank" rel="noopener noreferrer" title="Open PDF"></a></div><div id="breadcrumbs" class="breadcrumb"><a href="/index.html">Documentation</a><a href="https://aws.amazon.com/architecture/well-architected/">AWS Well-Architected</a><a href="devops-guidance.html">AWS Well-Architected</a></div><div id="page-toc-src"><a href="#introduction">Introduction</a><a href="#definitions">Definitions</a></div><awsdocs-doc-page-banner></awsdocs-doc-page-banner><div id="main-content" class="awsui-util-container"><div id="main-col-body"><awsdocs-language-banner data-service="$ctrl.pageService"></awsdocs-language-banner><h1 class="topictitle" id="devops-guidance">DevOps Guidance</h1><div class="awsdocs-page-header-container"><awsdocs-page-header></awsdocs-page-header><awsdocs-filter-selector id="awsdocs-filter-selector"></awsdocs-filter-selector></div><p>Publication date: <b>September 20, 2023</b> (<a href="./document-revisions.html">Document history</a>)</p><p>
+    Drawing from Amazon's own transformative journey and the expertise
+    gained by AWS in 
+    managing cloud services at global scale, the AWS Well-Architected
+    Framework DevOps Guidance offers a structured approach that
+    organizations of all sizes can follow to cultivate a high-velocity,
+    security-focused culture capable of delivering substantial business
+    value using modern technologies and DevOps best practices.
+  </p>
+  <h2 id="introduction">Introduction</h2>
+
+      
+    <p>
+      In the early 2000s, Amazon went through its own DevOps
+      transformation which led to an online bookstore forming the Amazon Web Services
+      (AWS) cloud computing division. Today, AWS provides a
+      wide range of products and services for global customers that are
+      powered by that same innovative DevOps approach. Due to the
+      positive effects of this transformation, AWS recognizes the
+      significance of DevOps and has been at the forefront of its
+      adoption and implementation.
+    </p>
+    <p>
+      Amazon's own journey, along with the collective experience gained
+      from assisting customers as they modernize and migrate to the
+      cloud, provided insight into the capabilities which we believe
+      make DevOps adoption successful. With these learnings, we created
+      a collection of modern capabilities that together form a
+      comprehensive approach to designing, developing, securing, and
+      efficiently operating software at cloud scale.
+    </p>
+    <p> The content and recommendations outlined within the Well-Architected DevOps Guidance are
+      based on our expertise operating and managing services for global customers and serves as a
+      customizable reference to fit your organization's requirements. Each organization has unique
+      requirements which may deviate from the examples provided here.</p>
+    <p><b>There is no one-size-fits-all approach to adopting DevOps. Tailor
+        these recommendations to suit your individual environment, quality, and security
+        needs.</b>
+    </p>
+   
+    
+    <h2 id="definitions">Definitions</h2>
+    
+    
+    <div class="itemizedlist">
+       
+       
+       
+       
+       
+    <ul class="itemizedlist"><li class="listitem">
+        <p>
+          <b>DevOps Sagas</b> are core
+          domains within the software delivery process that collectively
+          form AWS DevOps best practices. Together, they form a
+          collection of modern capabilities representing a comprehensive
+          approach to designing, developing, securing, and efficiently
+          operating software at cloud scale. You can use the DevOps
+          Sagas as a common definition of what DevOps means to align on
+          a shared understanding within your organization.
+        </p>
+      </li><li class="listitem">
+        <p>
+          <b>Capabilities</b> are repeatable
+          mechanisms that an organization can continuously improve to
+          sustainably practice DevOps and achieve measurable outcomes.
+          Each capability includes best practice indicators, metrics,
+          and anti-patterns that can be tracked and refined over time.
+          Capabilities encompass a wide range of topics related to the
+          associated DevOps Saga. They are not presented in any specific
+          order.
+        </p>
+      </li><li class="listitem">
+        <p>
+          <b>Indicators</b> are a collective term covering best practices
+          spanning people, process, and technology. They can be used as qualitative measurements,
+          such as a checklist, to objectively assess and continuously track your organization's
+          ability to perform a capability. Each indicator contains a prescriptive improvement plan
+          that contains high-level guidance for performing it. Indicators can fall into one of three
+          categories, which represent importance: </p>
+        <div class="itemizedlist">
+           
+           
+           
+        <ul class="itemizedlist"><li class="listitem">
+            <p>
+              <b>Foundational:</b> Requirements to achieve minimum
+              viability of the capability when practicing DevOps. Indicators in this category are
+              considered essential for organizations to meet to achieve basic proficiency of the
+              capability. </p>
+          </li><li class="listitem">
+            <p>
+              <b>Recommended:</b> Recommended best practices and advanced
+              techniques that can improve the performance of the capability. Indicators in this
+              category offer significant benefits, such as improved security, developer experience,
+              speed, reliability, or the ability to optimize implementation in cloud-based
+              environments. </p>
+          </li><li class="listitem">
+            <p>
+              <b>Optional:</b> Minor adjustments and improvements that
+              further enhance the ability to implement the capability or apply only to specific use
+              cases. Indicators in this category might not be applicable to all organizations or
+              workloads, but can provide additional benefits to some. </p>
+          </li></ul></div>
+      </li><li class="listitem">
+        <p>
+          <b>Anti-patterns</b> are practices that might seem beneficial
+          initially, but have the potential to lead to unexpected or negative outcomes. They are
+          indicators that we have seen slow down or halt our customer's progress when adopting
+          DevOps within their organizations. Identifying and addressing anti-patterns can help you
+          to avoid pitfalls and optimize the chance for successful DevOps adoption. </p>
+      </li><li class="listitem">
+        <p>
+          <b>Metrics</b> are quantifiable measures of an organization's
+          ability to perform the associated capability. Think of indicators as the
+            <em>how</em> and metrics as the <em>how well</em> when using
+          this guidance to measure your organization's ability to implement a capability. There is
+          no one-size-fits-all approach to selecting which metrics to track. We provide metrics for
+          each capability as a starting point. Each organization needs to determine which metrics
+          are important to their business. Consider using additional frameworks, such as <a href="https://dora.dev/" rel="noopener noreferrer" target="_blank"><span>DevOps Research and Assessment (DORA)</span><awsui-icon class="awsdocs-link-icon" name="external"></awsui-icon></a> and <a href="https://queue.acm.org/detail.cfm?id=3454124" rel="noopener noreferrer" target="_blank"><span>SPACE</span><awsui-icon class="awsdocs-link-icon" name="external"></awsui-icon></a>, to further customize
+          the metrics we provide so that they align to your organizational goals. </p>
+      </li></ul></div>
+    <p> For more Well-Architected terminology, see <a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/definitions.html">Definitions</a> in the
+        <em>AWS Well-Architected Framework</em> whitepaper. </p>
+  <awsdocs-copyright class="copyright-print"></awsdocs-copyright><awsdocs-thumb-feedback right-edge="{{$ctrl.thumbFeedbackRightEdge}}"></awsdocs-thumb-feedback></div><noscript><div><div><div><div id="js_error_message"><p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p><p>To use the Amazon Web Services Documentation, Javascript must be enabled. Please refer to your browser's Help pages for instructions.</p></div></div></div></div></noscript><div id="main-col-footer" class="awsui-util-font-size-0"><div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div><div class="prev-next"><div id="next" class="next-link" accesskey="n" href="./using-the-devops-guidance.html">Using the DevOps Guidance</div></div></div><awsdocs-page-utilities></awsdocs-page-utilities></div><div id="quick-feedback-yes" style="display: none;"><div class="title">Did this page help you? - Yes</div><div class="content"><p>Thanks for letting us know we're doing a good job!</p><p>If you've got a moment, please tell us what we did right so we can do more of it.</p><p><awsui-button id="fblink" rel="noopener noreferrer" target="_blank" text="Feedback" click="linkClick($event)" href="https://docs.aws.amazon.com/forms/aws-doc-feedback?feedback_destination_id=897c6ffe-3c12-4691-9c85-dc23b20eabd4&amp;topic_url=https://docs.aws.amazon.com/en_us/wellarchitected/latest/devops-guidance/devops-guidance.html"></awsui-button></p></div></div><div id="quick-feedback-no" style="display: none;"><div class="title">Did this page help you? - No</div><div class="content"><p>Thanks for letting us know this page needs work. We're sorry we let you down.</p><p>If you've got a moment, please tell us how we can make the documentation better.</p><p><awsui-button id="fblink" rel="noopener noreferrer" target="_blank" text="Feedback" click="linkClick($event)" href="https://docs.aws.amazon.com/forms/aws-doc-feedback?feedback_destination_id=897c6ffe-3c12-4691-9c85-dc23b20eabd4&amp;topic_url=https://docs.aws.amazon.com/en_us/wellarchitected/latest/devops-guidance/devops-guidance.html"></awsui-button></p></div></div></div></body></div></awsdocs-view><div class="page-loading-indicator" id="page-loading-indicator"><awsui-spinner size="large"></awsui-spinner></div></div><div id="tools-panel" dom-region="tools"><awsdocs-tools-panel id="awsdocs-tools-panel"></awsdocs-tools-panel></div></awsui-app-layout><awsdocs-cookie-banner class="doc-cookie-banner"></awsdocs-cookie-banner></div></body></html>
