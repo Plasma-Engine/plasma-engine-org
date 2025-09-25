@@ -11,7 +11,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # GitHub settings
-GITHUB_USER="xkonjin"
+GITHUB_ORG="Plasma-Engine"
 GITHUB_TOKEN="${GITHUB_TOKEN}"
 VISIBILITY="private"  # Change to "public" if needed
 
@@ -37,7 +37,7 @@ create_repo() {
     
     # Check if repo exists
     if curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-        "https://api.github.com/repos/${GITHUB_USER}/${repo_name}" | grep -q "\"name\":"; then
+        "https://api.github.com/repos/${GITHUB_ORG}/${repo_name}" | grep -q "\"name\":"; then
         echo -e "${YELLOW}Repository ${repo_name} already exists, skipping...${NC}"
         return 0
     fi
@@ -46,7 +46,7 @@ create_repo() {
     response=$(curl -s -X POST \
         -H "Authorization: token ${GITHUB_TOKEN}" \
         -H "Accept: application/vnd.github.v3+json" \
-        https://api.github.com/user/repos \
+        "https://api.github.com/orgs/${GITHUB_ORG}/repos" \
         -d "{
             \"name\": \"${repo_name}\",
             \"description\": \"${description}\",
@@ -85,5 +85,5 @@ echo -e "${GREEN}═════════════════════
 echo -e "\n${YELLOW}Your repositories:${NC}"
 for repo_info in "${REPOS[@]}"; do
     IFS=':' read -r repo_name description <<< "$repo_info"
-    echo "  https://github.com/${GITHUB_USER}/${repo_name}"
+    echo "  https://github.com/${GITHUB_ORG}/${repo_name}"
 done

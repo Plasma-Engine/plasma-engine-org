@@ -12,9 +12,9 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # GitHub Token (should be kept secure)
-GITHUB_TOKEN="github_pat_REDACTED"
-GITHUB_USER="xkonjin"
-GITHUB_ORG="plasma-engine"
+GITHUB_TOKEN="${GITHUB_TOKEN:?Set GITHUB_TOKEN env var before running this script}"
+GITHUB_USER="${GITHUB_USER:-plasma-engine-bot}"
+GITHUB_ORG="Plasma-Engine"
 
 echo -e "${GREEN}Setting up GitHub authentication for Plasma Engine...${NC}"
 
@@ -105,7 +105,7 @@ echo -e "\n${YELLOW}For Cursor IDE:${NC}"
 echo "1. Open Cursor Settings (Cmd+,)"
 echo "2. Search for 'GitHub'"
 echo "3. Add token to GitHub: Personal Access Token field"
-echo "   Token: ${GITHUB_TOKEN}"
+echo "   Token: <REDACTED – use GITHUB_TOKEN environment variable>"
 
 echo -e "\n${YELLOW}For VS Code:${NC}"
 echo "1. Install GitHub Pull Requests extension"
@@ -120,7 +120,7 @@ echo -e "\n${YELLOW}Environment variables set for this session:${NC}"
 echo "  GITHUB_TOKEN, GITHUB_USER, GITHUB_ORG, GH_TOKEN"
 
 echo -e "\n${YELLOW}To make environment variables permanent, add to ~/.zshrc:${NC}"
-echo "  export GITHUB_TOKEN='${GITHUB_TOKEN}'"
+echo "  export GITHUB_TOKEN='<YOUR_GITHUB_PAT>'"
 echo "  export GITHUB_USER='${GITHUB_USER}'"
 echo "  export GITHUB_ORG='${GITHUB_ORG}'"
 

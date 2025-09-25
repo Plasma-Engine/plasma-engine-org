@@ -50,7 +50,7 @@ open http://localhost:3000
 | --- | --- | --- | --- |
 | Project scaffolding directories | Platform Eng | ✅ Complete | Local workspace initialized (`plasma-engine/`). |
 | Initial ADRs | Platform Eng | ✅ Complete | See `docs/adrs`. |
-| GitHub repositories created | Platform Eng | ✅ Complete | All 7 private repos created under `xkonjin` account. |
+| GitHub repositories created | Platform Eng | ✅ Complete | All service repositories live under the `Plasma-Engine` organization. |
 | Shared templates & CODEOWNERS | Platform Eng | ✅ Complete | Issue/PR templates, CODEOWNERS in `plasma-engine-shared`. |
 | CI/CD bootstrap | Platform Eng | ✅ Complete | Reusable workflows in `plasma-engine-infra`, CI configured for all services. |
 | Service README documentation | Platform Eng | ✅ Complete | Each service has detailed README with architecture overview. |
@@ -60,7 +60,7 @@ open http://localhost:3000
 ## Next Steps
 
 ### ✅ Completed
-- **PE-01**: GitHub repositories created (using personal account `xkonjin`)
+- **PE-01**: GitHub repositories created under the `Plasma-Engine` organization
 - **PE-02**: Shared templates deployed to all repositories
 - **PE-03**: Reusable CI workflows implemented in `plasma-engine-infra`
 - **PE-04**: Service repositories bootstrapped with CI and documentation
