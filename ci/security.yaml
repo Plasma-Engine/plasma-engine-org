@@ -1,0 +1,29 @@
+# Security Workflow
+# Purpose: Static analysis, dependency scanning, secret scanning, container scan
+# Inputs: codebase, dependency manifests
+# Outputs: SARIF reports, pass/fail gates
+# References: docs/devops/playbooks/README.md
+
+version: "1"
+stages:
+  - security
+
+jobs:
+  sast:
+    stage: security
+    steps:
+      - name: Run SAST
+        run: |
+          echo "# TODO: ruff/bandit/eslint --format sarif"
+  deps:
+    stage: security
+    steps:
+      - name: Dependency scan
+        run: |
+          echo "# TODO: pip-audit/npm audit"
+  secrets:
+    stage: security
+    steps:
+      - name: Secret scan
+        run: |
+          echo "# TODO: gitleaks/trufflehog"

@@ -1,0 +1,23 @@
+# Build Workflow
+# Purpose: Compile and build all services/packages in a reproducible manner
+# Inputs: source branch/ref, build matrix, cache keys
+# Outputs: build artifacts, SBOM, logs
+# References: docs/devops/playbooks/README.md
+# TODO: Connect to actual CI runner and artifact storage
+
+version: "1"
+stages:
+  - build
+
+jobs:
+  build:
+    stage: build
+    steps:
+      - name: Checkout
+        run: git checkout $CI_COMMIT_REF_NAME
+      - name: Build artifacts
+        run: |
+          echo "# TODO: implement service-specific builds"
+      - name: Generate SBOM
+        run: |
+          echo "# TODO: sbom generation (e.g., syft)"

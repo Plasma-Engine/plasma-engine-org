@@ -1,0 +1,20 @@
+# Package Workflow
+# Purpose: Package artifacts (wheels, docker images, npm packages)
+# Inputs: built artifacts, version/semver
+# Outputs: published packages to registries
+# References: docs/devops/playbooks/README.md
+
+version: "1"
+stages:
+  - package
+
+jobs:
+  package:
+    stage: package
+    steps:
+      - name: Build and tag Docker images
+        run: |
+          echo "# TODO: docker buildx build --push"
+      - name: Publish Python wheels
+        run: |
+          echo "# TODO: twine upload"
