@@ -1,0 +1,66 @@
+name: Infra - Plan & Apply
+
+on:
+  pull_request:
+    paths:
+      - 'docs/infra-blueprint/terraform/**'
+  workflow_dispatch: {}
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/infra-blueprint/terraform/**'
+
+jobs:
+  terraform:
+    name: Terraform Validate & Plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Init
+        working-directory: docs/infra-blueprint/terraform/envs/dev
+        run: terraform init -backend=false
+
+      - name: Format Check
+        working-directory: docs/infra-blueprint/terraform/envs/dev
+        run: terraform fmt -check -recursive
+
+      - name: Validate
+        working-directory: docs/infra-blueprint/terraform/envs/dev
+        run: terraform validate
+
+      - name: Plan (no backend, modules disabled)
+        working-directory: docs/infra-blueprint/terraform/envs/dev
+        run: terraform plan -var enable_vpc=false -var enable_eks=false -var enable_ecr=false -var enable_postgres=false -var enable_redis=false -var enable_observability=false
+
+  apply:
+    name: Terraform Apply (Protected)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production # Require manual approval in GitHub Environments
+    needs: [terraform]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Apply (example only)
+        working-directory: docs/infra-blueprint/terraform/envs/dev
+        run: |
+          # IMPORTANT: Configure remote backend and providers before enabling apply.
+          # This step is intentionally a placeholder to demonstrate approvals and gating.
+          echo "Apply would run here once backend/creds/providers are configured."
+

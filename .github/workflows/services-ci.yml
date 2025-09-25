@@ -1,0 +1,47 @@
+name: Services - Lint, Test, Build
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  matrix-ci:
+    name: CI (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [gateway, agent, brand, content, research]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node (gateway)
+        if: matrix.service == 'gateway'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Python (other services)
+        if: matrix.service != 'gateway'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps (gateway)
+        if: matrix.service == 'gateway'
+        run: |
+          echo "No gateway source in this workspace; placeholder for npm ci && npm run lint && npm test"
+
+      - name: Install deps (python services)
+        if: matrix.service != 'gateway'
+        run: |
+          echo "No python service sources in this workspace; placeholder for pip install -r requirements.txt && pytest -q"
+
+      - name: Build container (dry-run)
+        run: |
+          echo "Placeholder: docker build -t ghcr.io/plasma-engine/${{ matrix.service }}:${{ github.sha }} ."
+
