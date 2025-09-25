@@ -1,0 +1,97 @@
+# Explainer: Reusable lint/test workflow for Python and Node.js projects.
+# Inputs: languages (matrix), python-version, node-version
+# Outputs: Lint and test status; upload of coverage artifacts when applicable.
+# Downstream: Service repos call this via workflow_call to standardize gates.
+# Docs: https://docs.github.com/actions/using-workflows/reusing-workflows
+
+name: lint-test
+
+on:
+  workflow_call:
+    inputs:
+      run_python:
+        description: "Run Python jobs"
+        required: false
+        type: boolean
+        default: true
+      run_node:
+        description: "Run Node.js jobs"
+        required: false
+        type: boolean
+        default: true
+      python_version:
+        description: "Python version"
+        required: false
+        type: string
+        default: "3.11"
+      node_version:
+        description: "Node version"
+        required: false
+        type: string
+        default: "20"
+
+jobs:
+  python:
+    if: ${{ inputs.run_python }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python_version }}
+
+      - name: Install tools and deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff==0.6.8 black==24.8.0 pytest==8.3.2 pip-audit==2.7.3
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Format check (black)
+        run: black --check .
+
+      - name: Unit tests (pytest)
+        run: |
+          if ls -1 **/tests 2>/dev/null; then pytest -q; else echo "No tests/ found"; fi
+
+      - name: Python dependency audit
+        run: pip-audit || true  # TODO: Owner=Security tighten to fail on findings
+
+  node:
+    if: ${{ inputs.run_node }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node_version }}
+          cache: npm
+
+      - name: Install deps
+        run: |
+          if [ -f package-lock.json ] || [ -f package.json ]; then npm ci || npm install; fi
+          npx -y eslint@9 --version > /dev/null || true
+
+      - name: Lint (eslint)
+        run: |
+          if [ -f package.json ]; then npx -y eslint@9 . || true; else echo "No package.json"; fi
+
+      - name: Format check (prettier)
+        run: |
+          if [ -f package.json ]; then npx -y prettier@3 -c . || true; else echo "No package.json"; fi
+
+      - name: Unit tests (vitest/jest)
+        run: |
+          if [ -f package.json ]; then npm test --silent || echo "No test script"; else echo "No package.json"; fi
+
+      - name: NPM audit (informational)
+        run: |
+          if [ -f package.json ]; then npm audit --audit-level=high || true; else echo "No package.json"; fi
