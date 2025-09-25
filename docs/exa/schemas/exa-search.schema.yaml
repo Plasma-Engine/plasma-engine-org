@@ -1,0 +1,37 @@
+# Source: https://docs.exa.ai/reference/search (TODO: verify exact URL via Rube MCP)
+# Explainer: YAML variant of the Exa Search request schema (placeholder).
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://plasma-engine.org/docs/exa/schemas/exa-search.schema.yaml"
+title: "Exa Search Request (Placeholder)"
+description: >-
+  Placeholder schema for Exa Search request body. Replace with authoritative
+  fields via Rube MCP.
+type: object
+properties:
+  query:
+    type: string
+    description: Search query string.
+  numResults:
+    type: integer
+    minimum: 1
+    maximum: 100
+    default: 10
+  includeDomains:
+    type: array
+    items:
+      type: string
+      format: uri
+  excludeDomains:
+    type: array
+    items:
+      type: string
+      format: uri
+  useAutoprompt:
+    type: boolean
+    default: true
+required:
+  - query
+additionalProperties: true
+# TODO(research@plasma): Confirm supported filters, sorting, and auth headers.
+

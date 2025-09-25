@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://plasma-engine.org/docs/exa/schemas/exa-answers.schema.json",
+  "$comment": "Source: https://docs.exa.ai/reference/answers (TODO: verify via Rube MCP)",
+  "title": "Exa Answers Request (Placeholder)",
+  "description": "Placeholder schema for Exa Answers request body. Replace with verified schema.",
+  "type": "object",
+  "properties": {
+    "question": { "type": "string" },
+    "numResults": { "type": "integer", "minimum": 1, "maximum": 50, "default": 5 },
+    "returnSources": { "type": "boolean", "default": true },
+    "citationStyle": { "type": "string", "enum": ["none", "inline", "footnote"], "default": "inline" }
+  },
+  "required": ["question"],
+  "additionalProperties": true,
+  "$comment:note": "TODO(research@plasma): Confirm response envelope and streaming options, if any."
+}
+
