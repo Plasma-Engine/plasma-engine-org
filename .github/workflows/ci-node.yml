@@ -1,0 +1,20 @@
+## Explainer: Lints and tests Node/TypeScript projects using a reusable workflow.
+## References: docs/devops/playbooks/ci-cd.md
+name: CI - Node Lint & Test
+
+on:
+  push:
+    paths:
+      - '**/package.json'
+      - 'ci/reusable/lint-test-node.yml'
+  pull_request:
+    paths:
+      - '**/package.json'
+      - 'ci/reusable/lint-test-node.yml'
+
+jobs:
+  lint-test:
+    uses: ./.github/workflows/../ci/reusable/lint-test-node.yml
+    with:
+      node-version: '20'
+

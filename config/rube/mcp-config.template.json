@@ -1,0 +1,14 @@
+{
+  "_comment": "Rube MCP configuration template. Populate tokens and endpoints per environment.",
+  "version": "1",
+  "tools": {
+    "exa": {
+      "base_url": "https://api.exa.example.com", 
+      "auth": {
+        "type": "bearer",
+        "token_env": "EXA_API_TOKEN" 
+      }
+    }
+  },
+  "notes": "Use Rube MCP to source best practices and API specs first. Document fallbacks if used."
+}

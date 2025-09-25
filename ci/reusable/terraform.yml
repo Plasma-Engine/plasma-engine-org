@@ -1,0 +1,50 @@
+name: reusable-terraform
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: false
+        type: string
+        default: infra/terraform/envs/dev
+      terraform-version:
+        required: false
+        type: string
+        default: '1.7.5'
+    secrets: {}
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform-version }}
+      - name: Terraform fmt (check)
+        id: fmt
+        run: terraform fmt -recursive -check
+      - name: Terraform init
+        id: init
+        run: terraform init -input=false
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -input=false -out=tfplan || true # allow plan to fail until provider is configured
+      - name: Upload plan (if created)
+        if: steps.plan.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ inputs.working-directory }}/tfplan
+          retention-days: 3
+
