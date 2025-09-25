@@ -43,3 +43,10 @@ Recommendations:
 - TODO(devx@plasma): Add dev-tool bootstrap: `pip install ruff black` and `npm i -g eslint` (or project-local devDeps) for contributors; codify in CI.
 - TODO(infra@plasma): Install Terraform CLI (>= 1.5) locally and in CI runners; consider using `tfenv` or `asdf`.
 
+### Code Review Automation
+- Branch pushed: `chore/devops-scaffold-exa-ci-terraform`
+- Attempted PR creation via GitHub API failed (HTTP 404) likely due to token scope limits in this environment.
+- Manual PR link (from push output):
+  - https://github.com/Plasma-Engine/plasma-engine-org/pull/new/chore/devops-scaffold-exa-ci-terraform
+- Next action: Open PR and comment `@coderabbitai review` to trigger CodeRabbit. If the app is not installed, install org-wide and retry.
+
