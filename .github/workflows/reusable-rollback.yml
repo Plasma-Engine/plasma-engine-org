@@ -1,0 +1,21 @@
+ name: reusable-rollback
+ on:
+   workflow_call:
+     inputs:
+       environment:
+         required: true
+         type: string
+       release_id:
+         required: false
+         type: string
+ jobs:
+   rollback:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+       - name: Rollback
+         uses: ./.github/../ci/actions/rollback
+         with:
+           environment: ${{ inputs.environment }}
+           release_id: ${{ inputs.release_id }}
+
