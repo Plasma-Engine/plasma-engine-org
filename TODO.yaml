@@ -1,0 +1,133 @@
+# Plasma Engine Orchestrator — Machine Task List
+# Fields: id, title, scope, paths, owner_role, status, deps, risk, estimate
+
+- id: disc-warp-plan
+  title: Read WARP/ADRs and extract plan into POR
+  scope: discovery
+  paths: ["/workspace/docs/adrs", "/workspace/ORCHESTRATOR_PLAN.md"]
+  owner_role: Planner/Coordinator
+  status: in_progress
+  deps: []
+  risk: low
+  estimate: 0.5d
+
+- id: disc-services-map
+  title: Detect services and monorepo/multi-repo mapping; record in plan
+  scope: discovery
+  paths: ["/workspace"]
+  owner_role: Planner/Coordinator
+  status: pending
+  deps: [disc-warp-plan]
+  risk: low
+  estimate: 0.5d
+
+- id: bootstrap-shared-files
+  title: Create POR, WORK_LOG, TODO.yaml, PROGRESS.md baseline
+  scope: repo-admin
+  paths: ["/workspace"]
+  owner_role: Planner/Coordinator
+  status: pending
+  deps: [disc-warp-plan]
+  risk: low
+  estimate: 0.25d
+
+- id: env-clone-all
+  title: Clone all service repositories via make clone-all
+  scope: env
+  paths: ["/workspace"]
+  owner_role: Infra/Ops
+  status: pending
+  deps: [disc-services-map]
+  risk: medium
+  estimate: 0.5d
+
+- id: env-install-deps
+  title: Install dependencies for all services
+  scope: env
+  paths: ["/workspace"]
+  owner_role: Infra/Ops
+  status: pending
+  deps: [env-clone-all]
+  risk: medium
+  estimate: 0.5d
+
+- id: env-lint-test
+  title: Run lint-all and test-all to baseline CI health
+  scope: quality
+  paths: ["/workspace"]
+  owner_role: Internal Reviewer
+  status: pending
+  deps: [env-install-deps]
+  risk: low
+  estimate: 0.5d
+
+- id: env-infra-init
+  title: Start infra and init DB for integration sanity
+  scope: infra
+  paths: ["/workspace/plasma-engine-infra"]
+  owner_role: Infra/Ops
+  status: pending
+  deps: [env-clone-all]
+  risk: medium
+  estimate: 0.5d
+
+- id: plan-top3
+  title: Identify top 3 high-leverage improvements across services
+  scope: planning
+  paths: ["/workspace"]
+  owner_role: Research/Docs
+  status: pending
+  deps: [env-lint-test]
+  risk: low
+  estimate: 0.5d
+
+- id: plan-first-pr
+  title: Draft PR plan for the smallest improvement
+  scope: planning
+  paths: ["/workspace"]
+  owner_role: Planner/Coordinator
+  status: pending
+  deps: [plan-top3]
+  risk: low
+  estimate: 0.25d
+
+- id: branch-create
+  title: Create feature branch per naming convention
+  scope: vcs
+  paths: ["/workspace"]
+  owner_role: Builder-TS
+  status: pending
+  deps: [plan-first-pr]
+  risk: low
+  estimate: 0.1d
+
+- id: impl-smallest
+  title: Implement smallest improvement with tests and docs
+  scope: dev
+  paths: ["/workspace"]
+  owner_role: Builder-PY
+  status: pending
+  deps: [branch-create]
+  risk: low
+  estimate: 1d
+
+- id: validate-local
+  title: Validate locally (lint, tests, minimal integration run)
+  scope: quality
+  paths: ["/workspace"]
+  owner_role: Internal Reviewer
+  status: pending
+  deps: [impl-smallest]
+  risk: low
+  estimate: 0.5d
+
+- id: pr-open-review
+  title: Open PR and request CodeRabbit review
+  scope: vcs
+  paths: ["/workspace"]
+  owner_role: Planner/Coordinator
+  status: pending
+  deps: [validate-local]
+  risk: low
+  estimate: 0.25d
+
