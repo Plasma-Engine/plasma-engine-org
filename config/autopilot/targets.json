@@ -1,0 +1,85 @@
+{
+  "targets": [
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-org",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-gateway",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-agent",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-brand",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-content",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-research",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-infra",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    },
+    {
+      "owner": "Plasma-Engine",
+      "repo": "plasma-engine-shared",
+      "workflow": "autopilot.yml",
+      "inputs": {
+        "dry_run": "false",
+        "target_branch": "main",
+        "merge_method": "squash"
+      }
+    }
+  ]
+}
+

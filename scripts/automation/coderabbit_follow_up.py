@@ -62,6 +62,7 @@ class FollowUpOutcome(t.TypedDict):
     reason: str
 
 
+@dataclass
 class Configuration:
     """Runtime configuration derived from environment variables."""
 
