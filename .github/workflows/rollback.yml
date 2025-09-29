@@ -1,0 +1,44 @@
+# Explainer: Reusable rollback workflow.
+# Purpose: Trigger a rollback procedure using repo-provided script.
+# Inputs: environment, target, working-directory, rollback-script
+# Links: docs/devops/runbooks/rollback.md
+
+name: rollback
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      target:
+        description: Version/commit/tag to rollback to
+        type: string
+        required: true
+      working-directory:
+        type: string
+        required: false
+        default: '.'
+      rollback-script:
+        type: string
+        required: false
+        default: './scripts/deploy.py'
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Execute rollback
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          if [ -f ${{ inputs.rollback-script }} ]; then python ${{ inputs.rollback-script }} --env ${{ inputs.environment }} --rollback ${{ inputs.target }}; else echo 'Rollback script missing'; fi
+

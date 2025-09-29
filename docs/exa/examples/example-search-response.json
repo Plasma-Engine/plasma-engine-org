@@ -1,0 +1,10 @@
+{
+  "_explainer": "Placeholder response structure until replaced via Rube MCP",
+  "results": [
+    {
+      "title": "Sample Result",
+      "url": "https://example.com",
+      "snippet": "..."
+    }
+  ]
+}
