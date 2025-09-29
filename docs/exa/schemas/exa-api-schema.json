@@ -9,11 +9,26 @@
     "/v1/search": {
       "get": {
         "summary": "Search documents",
+        "security": [
+          {"apiKey": []}
+        ],
         "parameters": [
           {"name": "q", "in": "query", "required": true, "schema": {"type": "string"}}
         ],
         "responses": {"200": {"description": "OK"}}
       }
     }
-  }
+  },
+  "components": {
+    "securitySchemes": {
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  },
+  "security": [
+    {"apiKey": []}
+  ]
 }

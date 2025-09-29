@@ -12,8 +12,9 @@ Conventions:
 - Variables are declared with descriptions and types; outputs document consumers
 
 References:
-- Terraform Language: https://developer.hashicorp.com/terraform/language
-- Provider Docs (generic placeholder, replace per chosen cloud): https://registry.terraform.io/browse/providers
+
+- Terraform Language: <https://developer.hashicorp.com/terraform/language>
+- Provider Docs (generic placeholder, replace per chosen cloud): <https://registry.terraform.io/browse/providers>
 
 # TODO: Choose and document the target cloud provider(s), e.g., AWS, GCP, Azure.
 # TODO: Configure remote state backend (S3/GCS/AzureRM) and state locking (DynamoDB/Firestore/Blob leases).

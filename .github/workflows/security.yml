@@ -7,7 +7,7 @@ on:
 
 jobs:
   security:
-    uses: ./.github/workflows/../ci/reusable/security.yml
+    uses: ./ci/reusable/security.yml
     with:
       python: true
       node: true

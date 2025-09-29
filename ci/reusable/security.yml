@@ -27,10 +27,11 @@ jobs:
           python-version: '3.11'
       - name: Python audit (pip-audit)
         if: inputs.python
+        continue-on-error: true
         run: |
           python -m pip install --upgrade pip
           pip install pip-audit
-          pip-audit || true # allow until dependencies exist
+          pip-audit
 
       - name: Setup Node
         if: inputs.node
@@ -39,9 +40,10 @@ jobs:
           node-version: '20'
       - name: Node audit (npm audit)
         if: inputs.node
+        continue-on-error: true
         run: |
-          npm ci --ignore-scripts --no-audit --fund=false || true
-          npm audit --audit-level=high || true
+          npm ci --ignore-scripts --no-audit --fund=false
+          npm audit --audit-level=high
 
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@0.28.0

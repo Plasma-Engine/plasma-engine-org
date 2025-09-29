@@ -10,7 +10,8 @@ Flow:
 3. Rotate keys regularly; store secrets in the configured secrets manager.
 
 Example header:
-```
+
+```http
 Authorization: Bearer EXA_TOKEN_PLACEHOLDER
 ```
 

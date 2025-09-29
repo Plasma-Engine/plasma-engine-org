@@ -36,7 +36,6 @@ jobs:
         with:
           name: python-test-artifacts
           path: |
-            .pytest_cache
+            .pytest_cache/
             **/coverage*
-        retention-days: 7
-
+          retention-days: 7

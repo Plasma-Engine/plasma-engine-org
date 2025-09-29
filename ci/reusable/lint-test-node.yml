@@ -36,6 +36,5 @@ jobs:
         with:
           name: node-test-artifacts
           path: |
-            coverage
+            coverage/
           retention-days: 7
-

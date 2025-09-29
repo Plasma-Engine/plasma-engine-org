@@ -6,15 +6,23 @@ on:
   push:
     paths:
       - '**/*.py'
+      - '**/pyproject.toml'
+      - '**/requirements*.txt'
+      - '**/setup.cfg'
+      - '**/tox.ini'
       - 'ci/reusable/lint-test-python.yml'
   pull_request:
     paths:
       - '**/*.py'
+      - '**/pyproject.toml'
+      - '**/requirements*.txt'
+      - '**/setup.cfg'
+      - '**/tox.ini'
       - 'ci/reusable/lint-test-python.yml'
 
 jobs:
   lint-test:
-    uses: ./.github/workflows/../ci/reusable/lint-test-python.yml
+    uses: ./ci/reusable/lint-test-python.yml
     with:
       python-version: '3.11'
 

@@ -6,15 +6,23 @@ on:
   push:
     paths:
       - '**/package.json'
+      - '**/package-lock.json'
+      - '**/pnpm-lock.yaml'
+      - '**/yarn.lock'
+      - '**/*.{js,jsx,ts,tsx}'
       - 'ci/reusable/lint-test-node.yml'
   pull_request:
     paths:
       - '**/package.json'
+      - '**/package-lock.json'
+      - '**/pnpm-lock.yaml'
+      - '**/yarn.lock'
+      - '**/*.{js,jsx,ts,tsx}'
       - 'ci/reusable/lint-test-node.yml'
 
 jobs:
   lint-test:
-    uses: ./.github/workflows/../ci/reusable/lint-test-node.yml
+    uses: ./ci/reusable/lint-test-node.yml
     with:
       node-version: '20'
 

@@ -13,7 +13,7 @@ on:
 jobs:
   terraform:
     name: Terraform fmt/validate/plan
-    uses: ./.github/workflows/../ci/reusable/terraform.yml
+    uses: ./ci/reusable/terraform.yml
     with:
       working-directory: infra/terraform/envs/dev
       terraform-version: '1.7.5'
