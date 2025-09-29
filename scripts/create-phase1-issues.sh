@@ -9,7 +9,6 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 GITHUB_ORG="${GITHUB_ORG:-Plasma-Engine}"
 
 create_issue() {
@@ -19,10 +18,9 @@ create_issue() {
   local labels="$1"; shift
 
   local existing
-  existing=$(gh issue list -R "${GITHUB_ORG}/${repo}" --search "${id}" --json number --jq 'length')
+  existing=$(gh issue list -R "${GITHUB_ORG}/${repo}" --state all --search "in:title \"${id}\"" --json number --jq 'length')
   if [[ "${existing}" != "0" ]]; then
     echo -e "  ${YELLOW}•${NC} [${id}] already exists"
-    cat > /dev/null
     return
   fi
 
@@ -33,7 +31,8 @@ create_issue() {
   IFS=',' read -ra raw_labels <<< "${labels}"
   local label_args=()
   for label in "${raw_labels[@]}"; do
-    local trimmed="$(echo "${label}" | xargs)"
+    local trimmed
+    trimmed=$(echo "${label}" | xargs)
     [[ -n "${trimmed}" ]] && label_args+=(--label "${trimmed}")
   done
 

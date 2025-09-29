@@ -56,6 +56,8 @@ printf '%s' "${PAYLOAD}" > "${TMP_FILE}"
 
 echo -e "${BLUE}Applying branch protection to main branches${NC}"
 
+failed=0
+
 for repo in "${REPOS[@]}"; do
   echo -e "\n${YELLOW}Repository: ${repo}${NC}"
   if gh api "repos/${GITHUB_ORG}/${repo}/branches/main/protection" \
@@ -65,7 +67,13 @@ for repo in "${REPOS[@]}"; do
     echo -e "  ${GREEN}✓${NC} Protection updated"
   else
     echo -e "  ${YELLOW}⚠${NC} Failed to update protection"
+    failed=1
   fi
 done
+
+if [[ ${failed} -ne 0 ]]; then
+  echo -e "\n${YELLOW}Branch protection partially applied. See warnings above.${NC}" >&2
+  exit 1
+fi
 
 echo -e "\n${GREEN}Branch protection applied.${NC}"
