@@ -1,0 +1,242 @@
+# Workspace recursive listing (ls -laR)
+    .:
+    total 76
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 1 root   root   4096 Sep 25 15:58 ..
+    -rw-r--r-- 1 ubuntu ubuntu 4118 Sep 25 15:58 CODE_OF_CONDUCT.md
+    -rw-r--r-- 1 ubuntu ubuntu 7191 Sep 25 15:58 CONTRIBUTING.md
+    drwxr-xr-x 6 ubuntu ubuntu 4096 Sep 25 16:01 docs
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 .git
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .github
+    -rw-r--r-- 1 ubuntu ubuntu  221 Sep 25 15:58 .gitignore
+    -rw-r--r-- 1 ubuntu ubuntu 8895 Sep 25 15:58 Makefile
+    -rw-r--r-- 1 ubuntu ubuntu 5653 Sep 25 15:58 README.md
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 scripts
+    -rw-r--r-- 1 ubuntu ubuntu 4225 Sep 25 15:58 SECURITY.md
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 16:01 third_party
+    
+    ./docs:
+    total 36
+    drwxr-xr-x 6 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 adrs
+    -rw-r--r-- 1 ubuntu ubuntu 2623 Sep 25 15:58 devops-process.md
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 16:01 exa
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 16:01 inventory
+    -rw-r--r-- 1 ubuntu ubuntu 5236 Sep 25 15:58 phase-0-completion.md
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 tickets
+    
+    ./docs/adrs:
+    total 20
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 6 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    -rw-r--r-- 1 ubuntu ubuntu 1701 Sep 25 15:58 ADR-0001-multi-repo-structure.md
+    -rw-r--r-- 1 ubuntu ubuntu 1883 Sep 25 15:58 ADR-0002-platform-tech-stack.md
+    -rw-r--r-- 1 ubuntu ubuntu 1689 Sep 25 15:58 ADR-0003-ci-cd-bootstrap.md
+    
+    ./docs/exa:
+    total 12
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 6 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 16:01 raw
+    
+    ./docs/exa/raw:
+    total 8
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    
+    ./docs/inventory:
+    total 12
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 6 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    -rw-r--r-- 1 ubuntu ubuntu   40 Sep 25 16:01 structure.ls.txt
+    
+    ./docs/tickets:
+    total 88
+    drwxr-xr-x 2 ubuntu ubuntu  4096 Sep 25 15:58 .
+    drwxr-xr-x 6 ubuntu ubuntu  4096 Sep 25 16:01 ..
+    -rw-r--r-- 1 ubuntu ubuntu  2276 Sep 25 15:58 issue-template.md
+    -rw-r--r-- 1 ubuntu ubuntu  4913 Sep 25 15:58 phase-0.md
+    -rw-r--r-- 1 ubuntu ubuntu  5211 Sep 25 15:58 phase-1-agent.md
+    -rw-r--r-- 1 ubuntu ubuntu  5701 Sep 25 15:58 phase-1-brand.md
+    -rw-r--r-- 1 ubuntu ubuntu  5264 Sep 25 15:58 phase-1-content.md
+    -rw-r--r-- 1 ubuntu ubuntu  5875 Sep 25 15:58 phase-1-gateway.md
+    -rw-r--r-- 1 ubuntu ubuntu  5892 Sep 25 15:58 phase-1-infra.md
+    -rw-r--r-- 1 ubuntu ubuntu 12566 Sep 25 15:58 phase-1.md
+    -rw-r--r-- 1 ubuntu ubuntu  2494 Sep 25 15:58 phase-1-overview.md
+    -rw-r--r-- 1 ubuntu ubuntu  5869 Sep 25 15:58 phase-1-research.md
+    
+    ./.git:
+    total 52
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    -rw-r--r-- 1 ubuntu ubuntu  402 Sep 25 15:59 config
+    -rw-r--r-- 1 ubuntu ubuntu   73 Sep 25 15:58 description
+    -rw-r--r-- 1 ubuntu ubuntu  110 Sep 25 15:58 FETCH_HEAD
+    -rw-r--r-- 1 ubuntu ubuntu   70 Sep 25 15:58 HEAD
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 hooks
+    -rw-r--r-- 1 ubuntu ubuntu 3736 Sep 25 15:58 index
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 info
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 logs
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 objects
+    -rw-r--r-- 1 ubuntu ubuntu  299 Sep 25 15:58 packed-refs
+    drwxr-xr-x 5 ubuntu ubuntu 4096 Sep 25 15:58 refs
+    
+    ./.git/hooks:
+    total 72
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 ..
+    -rwxr-xr-x 1 ubuntu ubuntu  478 Sep 25 15:58 applypatch-msg.sample
+    -rwxr-xr-x 1 ubuntu ubuntu  896 Sep 25 15:58 commit-msg.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 4726 Sep 25 15:58 fsmonitor-watchman.sample
+    -rwxr-xr-x 1 ubuntu ubuntu  189 Sep 25 15:58 post-update.sample
+    -rwxr-xr-x 1 ubuntu ubuntu  424 Sep 25 15:58 pre-applypatch.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 1649 Sep 25 15:58 pre-commit.sample
+    -rwxr-xr-x 1 ubuntu ubuntu  416 Sep 25 15:58 pre-merge-commit.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 1492 Sep 25 15:58 prepare-commit-msg.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 1374 Sep 25 15:58 pre-push.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 4898 Sep 25 15:58 pre-rebase.sample
+    -rwxr-xr-x 1 ubuntu ubuntu  544 Sep 25 15:58 pre-receive.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 2783 Sep 25 15:58 push-to-checkout.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 2308 Sep 25 15:58 sendemail-validate.sample
+    -rwxr-xr-x 1 ubuntu ubuntu 3650 Sep 25 15:58 update.sample
+    
+    ./.git/info:
+    total 12
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 ..
+    -rw-r--r-- 1 ubuntu ubuntu  240 Sep 25 15:58 exclude
+    
+    ./.git/logs:
+    total 16
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 ..
+    -rw-r--r-- 1 ubuntu ubuntu  649 Sep 25 15:58 HEAD
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 refs
+    
+    ./.git/logs/refs:
+    total 16
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 heads
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 remotes
+    
+    ./.git/logs/refs/heads:
+    total 16
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 cursor
+    -rw-r--r-- 1 ubuntu ubuntu  192 Sep 25 15:58 main
+    
+    ./.git/logs/refs/heads/cursor:
+    total 12
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    -rw-r--r-- 1 ubuntu ubuntu  163 Sep 25 15:58 research-devops-lifecycle-and-exa-tooling-6969
+    
+    ./.git/logs/refs/remotes:
+    total 12
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 origin
+    
+    ./.git/logs/refs/remotes/origin:
+    total 12
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    -rw-r--r-- 1 ubuntu ubuntu  192 Sep 25 15:58 HEAD
+    
+    ./.git/objects:
+    total 16
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 info
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 pack
+    
+    ./.git/objects/info:
+    total 8
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 4 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    
+    ./.git/objects/pack:
+    total 92
+    drwxr-xr-x 2 ubuntu ubuntu  4096 Sep 25 15:58 .
+    drwxr-xr-x 4 ubuntu ubuntu  4096 Sep 25 15:58 ..
+    -r--r--r-- 1 ubuntu ubuntu  2920 Sep 25 15:58 pack-e9a594b61765fd2a75f84defb380aee3528198e9.idx
+    -r--r--r-- 1 ubuntu ubuntu 75439 Sep 25 15:58 pack-e9a594b61765fd2a75f84defb380aee3528198e9.pack
+    -r--r--r-- 1 ubuntu ubuntu   316 Sep 25 15:58 pack-e9a594b61765fd2a75f84defb380aee3528198e9.rev
+    
+    ./.git/refs:
+    total 20
+    drwxr-xr-x 5 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 15:59 ..
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 heads
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 remotes
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 tags
+    
+    ./.git/refs/heads:
+    total 16
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 5 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 cursor
+    -rw-r--r-- 1 ubuntu ubuntu   41 Sep 25 15:58 main
+    
+    ./.git/refs/heads/cursor:
+    total 12
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    -rw-r--r-- 1 ubuntu ubuntu   41 Sep 25 15:58 research-devops-lifecycle-and-exa-tooling-6969
+    
+    ./.git/refs/remotes:
+    total 12
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 5 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 origin
+    
+    ./.git/refs/remotes/origin:
+    total 12
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    -rw-r--r-- 1 ubuntu ubuntu   30 Sep 25 15:58 HEAD
+    
+    ./.git/refs/tags:
+    total 8
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 5 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    
+    ./.github:
+    total 20
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    -rw-r--r-- 1 ubuntu ubuntu 5855 Sep 25 15:58 ORGANIZATION.md
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 profile
+    
+    ./.github/profile:
+    total 16
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 15:58 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 15:58 ..
+    -rw-r--r-- 1 ubuntu ubuntu 5193 Sep 25 15:58 README.md
+    
+    ./scripts:
+    total 76
+    drwxr-xr-x 2 ubuntu ubuntu  4096 Sep 25 15:58 .
+    drwxr-xr-x 7 ubuntu ubuntu  4096 Sep 25 16:01 ..
+    -rwxr-xr-x 1 ubuntu ubuntu  3138 Sep 25 15:58 create-github-repos.sh
+    -rwxr-xr-x 1 ubuntu ubuntu  7247 Sep 25 15:58 create-issues-simple.sh
+    -rwxr-xr-x 1 ubuntu ubuntu  6492 Sep 25 15:58 create-personal-repos.sh
+    -rwxr-xr-x 1 ubuntu ubuntu  4548 Sep 25 15:58 push-to-github.sh
+    -rwxr-xr-x 1 ubuntu ubuntu  6546 Sep 25 15:58 push-to-plasma-engine.sh
+    -rwxr-xr-x 1 ubuntu ubuntu  5026 Sep 25 15:58 setup-github-auth.sh
+    -rwxr-xr-x 1 ubuntu ubuntu 13370 Sep 25 15:58 setup-github-complete.sh
+    -rw-r--r-- 1 ubuntu ubuntu  4343 Sep 25 15:58 setup-ssh-and-push.sh
+    
+    ./third_party:
+    total 12
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 7 ubuntu ubuntu 4096 Sep 25 16:01 ..
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 16:01 exa
+    
+    ./third_party/exa:
+    total 8
+    drwxr-xr-x 2 ubuntu ubuntu 4096 Sep 25 16:01 .
+    drwxr-xr-x 3 ubuntu ubuntu 4096 Sep 25 16:01 ..
