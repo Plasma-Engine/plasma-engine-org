@@ -1,0 +1,1711 @@
+openapi: 3.0.3
+info:
+  title: Plasma Engine API
+  description: |
+    Enterprise AI Platform for Research Automation, Brand Intelligence, and Content Orchestration
+
+    The Plasma Engine platform provides comprehensive AI-powered services through a unified GraphQL API
+    with REST endpoints for specific operations. This specification covers all service endpoints and
+    data models across the platform.
+
+    ## Architecture
+
+    The platform consists of multiple microservices:
+    - **Gateway**: GraphQL federation and authentication (Port 3000)
+    - **Research**: GraphRAG and knowledge management (Port 8000)
+    - **Brand**: Brand monitoring and sentiment analysis (Port 8001)
+    - **Content**: Content generation and publishing (Port 8002)
+    - **Agent**: Multi-agent workflows and automation (Port 8003)
+
+    ## Authentication
+
+    All API endpoints require authentication via JWT Bearer tokens:
+    ```
+    Authorization: Bearer <jwt_token>
+    ```
+
+    ## Rate Limiting
+
+    API requests are rate limited per organization:
+    - Free: 1,000 requests/hour
+    - Pro: 10,000 requests/hour
+    - Enterprise: 100,000 requests/hour
+
+  version: 1.0.0
+  contact:
+    name: Plasma Engine API Support
+    url: https://plasma-engine.com/support
+    email: api-support@plasma-engine.com
+  license:
+    name: Proprietary
+    url: https://plasma-engine.com/license
+
+servers:
+  - url: https://api.plasma-engine.com
+    description: Production server
+  - url: https://staging-api.plasma-engine.com
+    description: Staging server
+  - url: http://localhost:3000
+    description: Local development server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # GraphQL Federation Endpoint
+  /graphql:
+    post:
+      tags:
+        - GraphQL
+      summary: GraphQL endpoint for federated queries
+      description: |
+        Main GraphQL endpoint that federates queries across all services.
+        Supports queries, mutations, and subscriptions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: GraphQL query string
+                variables:
+                  type: object
+                  description: Variables for the GraphQL query
+                operationName:
+                  type: string
+                  description: Operation name for the query
+            examples:
+              user_query:
+                summary: Get current user
+                value:
+                  query: "query { me { id email name organization { id name } } }"
+              knowledge_query:
+                summary: Knowledge base query
+                value:
+                  query: |
+                    query KnowledgeQuery($input: KnowledgeQueryInput!) {
+                      knowledgeQuery(input: $input) {
+                        answer
+                        sources { title url relevanceScore }
+                        confidence
+                      }
+                    }
+                  variables:
+                    input:
+                      query: "What are the latest trends in AI?"
+                      sources: ["documents", "web"]
+      responses:
+        '200':
+          description: Successful GraphQL response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: Query result data
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GraphQLError'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  # Health and Status Endpoints
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health check endpoint
+      description: Returns the health status of the gateway and all federated services
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /ready:
+    get:
+      tags:
+        - System
+      summary: Readiness check endpoint
+      description: Returns readiness status indicating if the service can handle requests
+      security: []
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessResponse'
+        '503':
+          description: Service is not ready
+
+  /metrics:
+    get:
+      tags:
+        - System
+      summary: Prometheus metrics endpoint
+      description: Returns Prometheus-formatted metrics for monitoring
+      security: []
+      responses:
+        '200':
+          description: Metrics data
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: |
+                  # HELP http_requests_total Total number of HTTP requests
+                  # TYPE http_requests_total counter
+                  http_requests_total{method="GET",route="/health",status_code="200"} 1234
+
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePassword123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh JWT token
+      description: Get a new JWT token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Document Management (Research Service)
+  /api/v1/documents:
+    get:
+      tags:
+        - Documents
+      summary: List documents
+      description: Retrieve a paginated list of documents
+      parameters:
+        - $ref: '#/components/parameters/Skip'
+        - $ref: '#/components/parameters/Limit'
+        - name: search
+          in: query
+          description: Search term to filter documents
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by processing status
+          schema:
+            $ref: '#/components/schemas/DocumentStatus'
+      responses:
+        '200':
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Document'
+                  total:
+                    type: integer
+                    description: Total number of documents
+                  skip:
+                    type: integer
+                    description: Number of documents skipped
+                  limit:
+                    type: integer
+                    description: Maximum number of documents returned
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Documents
+      summary: Upload document
+      description: Upload a new document for processing
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Document file to upload
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Tags to associate with the document
+                description:
+                  type: string
+                  description: Document description
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/documents/{documentId}:
+    get:
+      tags:
+        - Documents
+      summary: Get document by ID
+      description: Retrieve detailed information about a specific document
+      parameters:
+        - $ref: '#/components/parameters/DocumentId'
+      responses:
+        '200':
+          description: Document details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentDetailed'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      tags:
+        - Documents
+      summary: Delete document
+      description: Remove a document and all associated data
+      parameters:
+        - $ref: '#/components/parameters/DocumentId'
+      responses:
+        '204':
+          description: Document deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Knowledge Management
+  /api/v1/knowledge/query:
+    post:
+      tags:
+        - Knowledge
+      summary: GraphRAG knowledge query
+      description: |
+        Perform a GraphRAG query against the knowledge base.
+        Combines vector similarity search with knowledge graph traversal
+        to provide comprehensive, contextual answers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgeQueryRequest'
+      responses:
+        '200':
+          description: Knowledge query response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgeQueryResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/knowledge/entities:
+    get:
+      tags:
+        - Knowledge
+      summary: Search entities
+      description: Search for entities in the knowledge graph
+      parameters:
+        - name: search
+          in: query
+          required: true
+          description: Search term for entity names
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Filter by entity type
+          schema:
+            type: string
+            enum: [Person, Organization, Location, Product, Concept]
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: List of matching entities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entities:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Entity'
+                  total:
+                    type: integer
+
+  # Brand Monitoring
+  /api/v1/brand/mentions:
+    get:
+      tags:
+        - Brand
+      summary: Get brand mentions
+      description: Retrieve brand mentions with filtering and pagination
+      parameters:
+        - $ref: '#/components/parameters/Skip'
+        - $ref: '#/components/parameters/Limit'
+        - name: brandId
+          in: query
+          required: true
+          description: Brand ID to get mentions for
+          schema:
+            type: string
+            format: uuid
+        - name: sentiment
+          in: query
+          description: Filter by sentiment
+          schema:
+            type: string
+            enum: [positive, negative, neutral]
+        - name: startDate
+          in: query
+          description: Start date for mention range
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End date for mention range
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of brand mentions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mentions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BrandMention'
+                  analytics:
+                    $ref: '#/components/schemas/BrandAnalytics'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+
+  /api/v1/brand/sentiment/analyze:
+    post:
+      tags:
+        - Brand
+      summary: Analyze sentiment
+      description: Perform sentiment analysis on provided text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Text to analyze for sentiment
+                  maxLength: 5000
+                language:
+                  type: string
+                  description: Language of the text
+                  default: auto
+                  example: en
+      responses:
+        '200':
+          description: Sentiment analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SentimentAnalysis'
+
+  # Content Generation
+  /api/v1/content/generate:
+    post:
+      tags:
+        - Content
+      summary: Generate content
+      description: Generate content using AI models with specified parameters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentGenerationRequest'
+      responses:
+        '200':
+          description: Generated content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeneratedContent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/content/{contentId}/publish:
+    post:
+      tags:
+        - Content
+      summary: Schedule content publishing
+      description: Schedule generated content for publishing to specified platforms
+      parameters:
+        - $ref: '#/components/parameters/ContentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - platforms
+                - scheduledAt
+              properties:
+                platforms:
+                  type: array
+                  items:
+                    type: string
+                    enum: [twitter, linkedin, facebook, blog, email]
+                  description: Platforms to publish content to
+                scheduledAt:
+                  type: string
+                  format: date-time
+                  description: Scheduled publication time
+                approvers:
+                  type: array
+                  items:
+                    type: string
+                  description: User IDs who must approve before publishing
+      responses:
+        '201':
+          description: Publishing scheduled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishingSchedule'
+
+  # Agent Workflows
+  /api/v1/agent/workflows:
+    get:
+      tags:
+        - Agent
+      summary: List workflows
+      description: Get list of available agent workflows
+      parameters:
+        - $ref: '#/components/parameters/Skip'
+        - $ref: '#/components/parameters/Limit'
+        - name: status
+          in: query
+          description: Filter by workflow status
+          schema:
+            $ref: '#/components/schemas/WorkflowStatus'
+      responses:
+        '200':
+          description: List of workflows
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  workflows:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Workflow'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+
+    post:
+      tags:
+        - Agent
+      summary: Create workflow
+      description: Create a new agent workflow with specified steps and configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWorkflowRequest'
+      responses:
+        '201':
+          description: Workflow created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Workflow'
+
+  /api/v1/agent/workflows/{workflowId}/execute:
+    post:
+      tags:
+        - Agent
+      summary: Execute workflow
+      description: Start execution of a workflow with optional input parameters
+      parameters:
+        - $ref: '#/components/parameters/WorkflowId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: object
+                  description: Input parameters for workflow execution
+                priority:
+                  type: string
+                  enum: [low, normal, high, urgent]
+                  default: normal
+                  description: Execution priority
+      responses:
+        '202':
+          description: Workflow execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowExecution'
+
+  /api/v1/agent/executions/{executionId}:
+    get:
+      tags:
+        - Agent
+      summary: Get workflow execution status
+      description: Retrieve the current status and progress of a workflow execution
+      parameters:
+        - $ref: '#/components/parameters/ExecutionId'
+      responses:
+        '200':
+          description: Execution status and details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkflowExecutionDetailed'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    Skip:
+      name: skip
+      in: query
+      description: Number of items to skip for pagination
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    DocumentId:
+      name: documentId
+      in: path
+      required: true
+      description: Document ID
+      schema:
+        type: string
+        format: uuid
+
+    ContentId:
+      name: contentId
+      in: path
+      required: true
+      description: Content ID
+      schema:
+        type: string
+        format: uuid
+
+    WorkflowId:
+      name: workflowId
+      in: path
+      required: true
+      description: Workflow ID
+      schema:
+        type: string
+        format: uuid
+
+    ExecutionId:
+      name: executionId
+      in: path
+      required: true
+      description: Execution ID
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "VALIDATION_ERROR"
+              message: "Invalid input parameters"
+              details:
+                field: "email"
+                reason: "Invalid email format"
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "UNAUTHORIZED"
+              message: "Authentication required"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "NOT_FOUND"
+              message: "Resource not found"
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: "RATE_LIMITED"
+              message: "API rate limit exceeded"
+      headers:
+        X-RateLimit-Limit:
+          description: Request limit per hour
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          description: Remaining requests in current window
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          description: Time when rate limit resets (Unix timestamp)
+          schema:
+            type: integer
+
+  schemas:
+    # Common schemas
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Error code for programmatic handling
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional error details
+
+    PaginationInfo:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Total number of items
+        skip:
+          type: integer
+          description: Number of items skipped
+        limit:
+          type: integer
+          description: Maximum number of items returned
+        hasNext:
+          type: boolean
+          description: Whether there are more items available
+
+    # Health and status schemas
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              status:
+                type: string
+                enum: [healthy, unhealthy]
+              responseTime:
+                type: string
+                description: Response time with unit (e.g., "15ms")
+        version:
+          type: string
+
+    ReadinessResponse:
+      type: object
+      properties:
+        ready:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
+
+    # Authentication schemas
+    AuthResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - user
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: Refresh token for getting new access tokens
+        expiresIn:
+          type: integer
+          description: Token expiration time in seconds
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        organization:
+          $ref: '#/components/schemas/Organization'
+        role:
+          type: string
+          enum: [admin, manager, user, viewer]
+        permissions:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        lastLoginAt:
+          type: string
+          format: date-time
+
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        plan:
+          type: string
+          enum: [free, pro, enterprise]
+        memberCount:
+          type: integer
+        apiUsage:
+          type: object
+          properties:
+            current:
+              type: integer
+            limit:
+              type: integer
+            resetDate:
+              type: string
+              format: date-time
+
+    # GraphQL schemas
+    GraphQLError:
+      type: object
+      properties:
+        message:
+          type: string
+        locations:
+          type: array
+          items:
+            type: object
+            properties:
+              line:
+                type: integer
+              column:
+                type: integer
+        path:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+        extensions:
+          type: object
+          properties:
+            code:
+              type: string
+            details:
+              type: object
+
+    # Document schemas
+    DocumentStatus:
+      type: string
+      enum: [uploading, processing, processed, failed, deleted]
+
+    Document:
+      type: object
+      required:
+        - id
+        - filename
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        filename:
+          type: string
+        status:
+          $ref: '#/components/schemas/DocumentStatus'
+        size:
+          type: integer
+          description: File size in bytes
+        mimeType:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        uploadedAt:
+          type: string
+          format: date-time
+        processedAt:
+          type: string
+          format: date-time
+
+    DocumentDetailed:
+      allOf:
+        - $ref: '#/components/schemas/Document'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Extracted text content
+            metadata:
+              type: object
+              properties:
+                pageCount:
+                  type: integer
+                wordCount:
+                  type: integer
+                language:
+                  type: string
+                author:
+                  type: string
+                title:
+                  type: string
+            entities:
+              type: array
+              items:
+                $ref: '#/components/schemas/Entity'
+            processingStatus:
+              type: object
+              properties:
+                stage:
+                  type: string
+                  enum: [text_extraction, entity_extraction, embedding, graph_building, completed]
+                progress:
+                  type: number
+                  minimum: 0
+                  maximum: 100
+                estimatedCompletion:
+                  type: string
+                  format: date-time
+
+    # Knowledge schemas
+    KnowledgeQueryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Natural language query
+          maxLength: 1000
+        sources:
+          type: array
+          items:
+            type: string
+            enum: [documents, web, news]
+          default: [documents]
+        maxTokens:
+          type: integer
+          minimum: 100
+          maximum: 8000
+          default: 4000
+        includeSource:
+          type: boolean
+          default: true
+        language:
+          type: string
+          default: auto
+
+    KnowledgeQueryResponse:
+      type: object
+      required:
+        - query
+        - answer
+      properties:
+        query:
+          type: string
+        answer:
+          type: string
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocumentSource'
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for the answer
+        reasoning:
+          type: string
+          description: Explanation of how the answer was derived
+        followUpQuestions:
+          type: array
+          items:
+            type: string
+        responseTime:
+          type: integer
+          description: Response time in milliseconds
+
+    DocumentSource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        relevanceScore:
+          type: number
+          minimum: 0
+          maximum: 1
+        excerpt:
+          type: string
+          description: Relevant excerpt from the source
+
+    Entity:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [Person, Organization, Location, Product, Concept, Event]
+        description:
+          type: string
+        aliases:
+          type: array
+          items:
+            type: string
+        properties:
+          type: object
+          additionalProperties: true
+        connections:
+          type: integer
+          description: Number of connections in the knowledge graph
+        documentCount:
+          type: integer
+          description: Number of documents mentioning this entity
+
+    # Brand schemas
+    BrandMention:
+      type: object
+      required:
+        - id
+        - brandId
+        - content
+        - sentiment
+        - source
+        - publishedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        brandId:
+          type: string
+          format: uuid
+        content:
+          type: string
+        sentiment:
+          $ref: '#/components/schemas/SentimentScore'
+        source:
+          type: string
+          description: Source platform or website
+        url:
+          type: string
+          format: uri
+        reach:
+          type: integer
+          description: Estimated reach/impressions
+        engagement:
+          $ref: '#/components/schemas/EngagementMetrics'
+        publishedAt:
+          type: string
+          format: date-time
+        language:
+          type: string
+        author:
+          type: object
+          properties:
+            name:
+              type: string
+            handle:
+              type: string
+            followers:
+              type: integer
+
+    SentimentScore:
+      type: object
+      required:
+        - overall
+        - confidence
+      properties:
+        overall:
+          type: number
+          minimum: -1
+          maximum: 1
+          description: Overall sentiment score (-1 negative, 0 neutral, 1 positive)
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        label:
+          type: string
+          enum: [positive, negative, neutral]
+        aspects:
+          type: array
+          items:
+            type: object
+            properties:
+              aspect:
+                type: string
+              sentiment:
+                type: number
+                minimum: -1
+                maximum: 1
+              mentions:
+                type: integer
+
+    EngagementMetrics:
+      type: object
+      properties:
+        likes:
+          type: integer
+        shares:
+          type: integer
+        comments:
+          type: integer
+        clicks:
+          type: integer
+        views:
+          type: integer
+
+    BrandAnalytics:
+      type: object
+      properties:
+        totalMentions:
+          type: integer
+        sentimentBreakdown:
+          type: object
+          properties:
+            positive:
+              type: integer
+            negative:
+              type: integer
+            neutral:
+              type: integer
+        topSources:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              count:
+                type: integer
+        trendingKeywords:
+          type: array
+          items:
+            type: string
+        averageSentiment:
+          type: number
+          minimum: -1
+          maximum: 1
+
+    SentimentAnalysis:
+      type: object
+      required:
+        - overall
+      properties:
+        overall:
+          $ref: '#/components/schemas/SentimentScore'
+        emotions:
+          type: object
+          properties:
+            joy:
+              type: number
+              minimum: 0
+              maximum: 1
+            anger:
+              type: number
+              minimum: 0
+              maximum: 1
+            fear:
+              type: number
+              minimum: 0
+              maximum: 1
+            sadness:
+              type: number
+              minimum: 0
+              maximum: 1
+            surprise:
+              type: number
+              minimum: 0
+              maximum: 1
+        keywords:
+          type: array
+          items:
+            type: object
+            properties:
+              word:
+                type: string
+              sentiment:
+                type: number
+              importance:
+                type: number
+
+    # Content schemas
+    ContentGenerationRequest:
+      type: object
+      required:
+        - type
+        - prompt
+      properties:
+        type:
+          type: string
+          enum: [blog_post, social_post, email, video_script, ad_copy, press_release]
+        prompt:
+          type: string
+          description: Content generation prompt
+          maxLength: 2000
+        parameters:
+          type: object
+          properties:
+            model:
+              type: string
+              enum: [gpt-4, gpt-3.5-turbo, claude-3-sonnet, claude-3-haiku]
+              default: gpt-4
+            temperature:
+              type: number
+              minimum: 0
+              maximum: 2
+              default: 0.7
+            maxTokens:
+              type: integer
+              minimum: 50
+              maximum: 4000
+              default: 1000
+            tone:
+              type: string
+              enum: [professional, casual, friendly, formal, creative, persuasive]
+              default: professional
+            audience:
+              type: string
+              description: Target audience description
+        brandGuidelines:
+          type: object
+          properties:
+            voice:
+              type: string
+            style:
+              type: string
+            keywords:
+              type: array
+              items:
+                type: string
+            restrictions:
+              type: array
+              items:
+                type: string
+
+    GeneratedContent:
+      type: object
+      required:
+        - id
+        - content
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        contentType:
+          type: string
+        status:
+          type: string
+          enum: [generated, review_pending, approved, rejected]
+        wordCount:
+          type: integer
+        variations:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              content:
+                type: string
+              score:
+                type: number
+                description: Quality/relevance score
+        metadata:
+          type: object
+          properties:
+            model:
+              type: string
+            parameters:
+              type: object
+            generatedAt:
+              type: string
+              format: date-time
+            estimatedReadTime:
+              type: integer
+              description: Estimated read time in minutes
+        compliance:
+          type: object
+          properties:
+            brandVoiceScore:
+              type: number
+              minimum: 0
+              maximum: 1
+            guidelinesViolations:
+              type: array
+              items:
+                type: string
+
+    PublishingSchedule:
+      type: object
+      required:
+        - id
+        - contentId
+        - platforms
+        - scheduledAt
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        contentId:
+          type: string
+          format: uuid
+        platforms:
+          type: array
+          items:
+            type: string
+        scheduledAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [scheduled, published, failed, cancelled]
+        approvals:
+          type: object
+          properties:
+            required:
+              type: array
+              items:
+                type: string
+            pending:
+              type: array
+              items:
+                type: string
+            approved:
+              type: array
+              items:
+                type: string
+        publishedAt:
+          type: string
+          format: date-time
+        publishingResults:
+          type: array
+          items:
+            type: object
+            properties:
+              platform:
+                type: string
+              status:
+                type: string
+                enum: [success, failed]
+              url:
+                type: string
+                format: uri
+              error:
+                type: string
+
+    # Agent/Workflow schemas
+    WorkflowStatus:
+      type: string
+      enum: [draft, active, paused, completed, failed, cancelled]
+
+    Workflow:
+      type: object
+      required:
+        - id
+        - name
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/WorkflowStatus'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowStep'
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [manual, scheduled, webhook, api]
+              configuration:
+                type: object
+        estimatedDuration:
+          type: integer
+          description: Estimated duration in minutes
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    WorkflowStep:
+      type: object
+      required:
+        - id
+        - type
+        - name
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [data_collection, analysis, content_generation, approval, publishing, notification]
+        name:
+          type: string
+        description:
+          type: string
+        configuration:
+          type: object
+          additionalProperties: true
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: IDs of steps that must complete before this step
+        timeout:
+          type: integer
+          description: Step timeout in minutes
+        retryPolicy:
+          type: object
+          properties:
+            maxRetries:
+              type: integer
+            backoffStrategy:
+              type: string
+              enum: [linear, exponential]
+
+    CreateWorkflowRequest:
+      type: object
+      required:
+        - name
+        - steps
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkflowStep'
+        triggers:
+          type: array
+          items:
+            type: object
+
+    WorkflowExecution:
+      type: object
+      required:
+        - executionId
+        - workflowId
+        - status
+      properties:
+        executionId:
+          type: string
+          format: uuid
+        workflowId:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [queued, running, paused, completed, failed, cancelled]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        currentStep:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        estimatedCompletion:
+          type: string
+          format: date-time
+        priority:
+          type: string
+          enum: [low, normal, high, urgent]
+
+    WorkflowExecutionDetailed:
+      allOf:
+        - $ref: '#/components/schemas/WorkflowExecution'
+        - type: object
+          properties:
+            steps:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  status:
+                    type: string
+                    enum: [pending, running, completed, failed, skipped]
+                  startedAt:
+                    type: string
+                    format: date-time
+                  completedAt:
+                    type: string
+                    format: date-time
+                  duration:
+                    type: integer
+                    description: Duration in seconds
+                  output:
+                    type: object
+                  error:
+                    type: string
+            logs:
+              type: array
+              items:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  level:
+                    type: string
+                    enum: [debug, info, warning, error]
+                  message:
+                    type: string
+                  agent:
+                    type: string
+                  stepId:
+                    type: string
+            metrics:
+              type: object
+              properties:
+                totalDuration:
+                  type: integer
+                  description: Total execution time in seconds
+                resourceUsage:
+                  type: object
+                  properties:
+                    cpuTime:
+                      type: number
+                    memoryPeak:
+                      type: integer
+                    networkCalls:
+                      type: integer
+
+tags:
+  - name: GraphQL
+    description: GraphQL federation endpoint for unified API access
+  - name: System
+    description: Health checks and system monitoring
+  - name: Authentication
+    description: User authentication and token management
+  - name: Documents
+    description: Document upload, processing, and management
+  - name: Knowledge
+    description: GraphRAG knowledge queries and entity management
+  - name: Brand
+    description: Brand monitoring and sentiment analysis
+  - name: Content
+    description: AI content generation and publishing
+  - name: Agent
+    description: Multi-agent workflows and automation

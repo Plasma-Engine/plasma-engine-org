@@ -1,0 +1,32 @@
+{
+  "twitter_xkonjin": {
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "twitter_elonmusk": {
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "linkedin_williamhgates": {
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "instagram_cristiano": {
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "tiktok_khaby.lame": {
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "youtube_MrBeast": {
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  }
+}

@@ -1,0 +1,305 @@
+name: CodeRabbit AI Reviews
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  coderabbit:
+    name: CodeRabbit AI Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: CodeRabbit AI Review
+        uses: coderabbitai/coderabbit-action@v2
+        with:
+          repository-token: ${{ secrets.GITHUB_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          language: en
+          model: gpt-4o  # Use latest GPT-4 model
+          review-simple-changes: true
+          review-comment-lgtm: false
+          path-filters: |
+            !**/*.md
+            !**/*.txt
+            !**/*.json
+            !**/package-lock.json
+            !**/yarn.lock
+            !**/requirements.txt
+          early-access: true
+          auto-review:
+            drafts: false
+            base-branches:
+              - main
+              - develop
+          reviews:
+            request-changes-workflow: true
+            high-level-summary: true
+            review-status: true
+            poem: false
+            auto-reply: true
+
+  code-quality-check:
+    name: Enhanced Code Quality Analysis
+    runs-on: ubuntu-latest
+    needs: coderabbit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install analysis tools
+        run: |
+          pip install --upgrade pip
+          pip install radon xenon vulture pycodestyle pydocstyle
+          npm install -g jshint complexity-report eslint-plugin-complexity
+
+      - name: Run complexity analysis
+        id: complexity
+        run: |
+          echo "# Code Complexity Analysis" > complexity_report.md
+          echo "" >> complexity_report.md
+
+          # Python complexity analysis
+          if find . -name "*.py" | head -1 > /dev/null; then
+            echo "## Python Complexity" >> complexity_report.md
+            echo "\`\`\`" >> complexity_report.md
+            radon cc . -a -nc || echo "No Python files or analysis failed" >> complexity_report.md
+            echo "\`\`\`" >> complexity_report.md
+            echo "" >> complexity_report.md
+
+            echo "## Python Maintainability" >> complexity_report.md
+            echo "\`\`\`" >> complexity_report.md
+            radon mi . -nc || echo "No Python files or analysis failed" >> complexity_report.md
+            echo "\`\`\`" >> complexity_report.md
+            echo "" >> complexity_report.md
+          fi
+
+          # JavaScript/TypeScript complexity analysis
+          if find . -name "*.js" -o -name "*.ts" | head -1 > /dev/null; then
+            echo "## JavaScript/TypeScript Complexity" >> complexity_report.md
+            echo "\`\`\`" >> complexity_report.md
+            find . -name "*.js" -o -name "*.ts" | head -10 | xargs -I {} cr {} --format plain || echo "No JS/TS files or analysis failed" >> complexity_report.md
+            echo "\`\`\`" >> complexity_report.md
+          fi
+
+      - name: Run documentation coverage
+        run: |
+          echo "## Documentation Coverage" >> complexity_report.md
+          echo "\`\`\`" >> complexity_report.md
+          if find . -name "*.py" | head -1 > /dev/null; then
+            pydocstyle . --count || echo "Documentation coverage analysis completed"
+          fi
+          echo "\`\`\`" >> complexity_report.md
+
+      - name: Comment complexity analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Read the complexity report
+            let report = '';
+            try {
+              report = fs.readFileSync('complexity_report.md', 'utf8');
+            } catch (error) {
+              report = 'Could not generate complexity report.';
+            }
+
+            // Find existing complexity comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.data.find(comment =>
+              comment.user.login === 'github-actions[bot]' &&
+              comment.body.includes('Code Complexity Analysis')
+            );
+
+            const body = `🔍 **Automated Code Quality Report**
+
+            ${report}
+
+            ---
+            *This analysis was automatically generated. Review complex functions and consider refactoring if complexity is too high.*`;
+
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+  security-focus-review:
+    name: Security-Focused Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install security tools
+        run: |
+          pip install --upgrade pip
+          pip install bandit semgrep safety
+
+      - name: Run security analysis
+        id: security
+        run: |
+          echo "# Security Analysis Report" > security_report.md
+          echo "" >> security_report.md
+
+          # Python security analysis with Bandit
+          if find . -name "*.py" | head -1 > /dev/null; then
+            echo "## Python Security Issues (Bandit)" >> security_report.md
+            echo "\`\`\`" >> security_report.md
+            bandit -r . -f txt -ll || echo "No high-severity security issues found" >> security_report.md
+            echo "\`\`\`" >> security_report.md
+            echo "" >> security_report.md
+          fi
+
+          # Run Semgrep for broader security analysis
+          echo "## Multi-Language Security Analysis (Semgrep)" >> security_report.md
+          echo "\`\`\`" >> security_report.md
+          semgrep --config=auto . --text --no-error || echo "Semgrep analysis completed" >> security_report.md
+          echo "\`\`\`" >> security_report.md
+
+      - name: Comment security analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let report = '';
+            try {
+              report = fs.readFileSync('security_report.md', 'utf8');
+            } catch (error) {
+              report = 'Could not generate security report.';
+            }
+
+            const body = `🔒 **Security Analysis Report**
+
+            ${report}
+
+            ---
+            *This security analysis was automatically generated. Please review any identified issues carefully.*`;
+
+            // Find existing security comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.data.find(comment =>
+              comment.user.login === 'github-actions[bot]' &&
+              comment.body.includes('Security Analysis Report')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+  performance-review:
+    name: Performance Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Analyze bundle size (Node.js)
+        if: hashFiles('**/package.json') != ''
+        run: |
+          echo "# Performance Analysis" > performance_report.md
+          echo "" >> performance_report.md
+          echo "## Bundle Size Analysis" >> performance_report.md
+
+          for service in plasma-engine-gateway; do
+            if [ -d "$service" ] && [ -f "$service/package.json" ]; then
+              echo "### $service" >> performance_report.md
+              cd "$service"
+              npm ci --quiet
+              if [ -f "webpack.config.js" ]; then
+                npm run build --if-present
+                echo "\`\`\`" >> ../performance_report.md
+                du -sh dist/ 2>/dev/null || echo "No build artifacts found" >> ../performance_report.md
+                echo "\`\`\`" >> ../performance_report.md
+              fi
+              cd ..
+            fi
+          done
+
+      - name: Comment performance analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let report = 'No performance analysis available.';
+            try {
+              report = fs.readFileSync('performance_report.md', 'utf8');
+            } catch (error) {
+              console.log('No performance report generated');
+            }
+
+            const body = `⚡ **Performance Analysis Report**
+
+            ${report}
+
+            ---
+            *Consider optimizing bundle sizes and monitoring performance metrics.*`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });

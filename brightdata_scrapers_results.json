@@ -1,0 +1,62 @@
+{
+  "Twitter": {
+    "sync": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    },
+    "async": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    }
+  },
+  "LinkedIn": {
+    "sync": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    },
+    "async": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    }
+  },
+  "Instagram": {
+    "sync": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    },
+    "async": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    }
+  },
+  "TikTok": {
+    "sync": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    },
+    "async": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    }
+  },
+  "YouTube": {
+    "sync": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    },
+    "async": {
+      "success": false,
+      "error": "Not found",
+      "status_code": 404
+    }
+  }
+}

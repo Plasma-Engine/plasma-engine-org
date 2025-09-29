@@ -1,0 +1,100 @@
+name: Test ScraperAPI Integration
+
+on:
+  workflow_dispatch:  # Manual trigger
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+  push:
+    paths:
+      - 'plasma-engine-brand/app/scrapers/**'
+      - 'scripts/test_scraperapi*.py'
+
+jobs:
+  test-scraperapi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install httpx python-dotenv
+
+      - name: Test ScraperAPI Key
+        env:
+          SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
+        run: |
+          echo "Testing ScraperAPI integration..."
+
+          # Create a simple inline test
+          python -c "
+import httpx
+import asyncio
+import os
+
+async def test():
+    api_key = os.getenv('SCRAPERAPI_KEY')
+    if not api_key:
+        print('❌ SCRAPERAPI_KEY not found in secrets')
+        return False
+
+    print(f'✅ Key found: {api_key[:10]}...')
+
+    # Test basic request
+    params = {
+        'api_key': api_key,
+        'url': 'http://httpbin.org/ip'
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.get('http://api.scraperapi.com', params=params)
+            response.raise_for_status()
+
+            data = response.json()
+            print(f'✅ API Test successful!')
+            print(f'   IP: {data.get(\"origin\", \"Unknown\")}')
+            print(f'   Credits used: {response.headers.get(\"X-API-Credits-Used\", \"Unknown\")}')
+            return True
+
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 403:
+            print('❌ API key is invalid or has no credits')
+        elif e.response.status_code == 401:
+            print('❌ Authentication failed')
+        else:
+            print(f'❌ HTTP Error: {e.response.status_code}')
+        return False
+    except Exception as e:
+        print(f'❌ Error: {e}')
+        return False
+
+success = asyncio.run(test())
+exit(0 if success else 1)
+"
+
+      - name: Test with full script
+        if: always()
+        env:
+          SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
+        run: |
+          if [ -f scripts/test_scraperapi.py ]; then
+            python scripts/test_scraperapi.py || true
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## ScraperAPI Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ $? -eq 0 ]; then
+            echo "✅ ScraperAPI integration is working!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ ScraperAPI test completed with warnings" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -4,6 +4,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-org",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -14,6 +15,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-gateway",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -24,6 +26,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-agent",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -34,6 +37,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-brand",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -44,6 +48,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-content",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -54,6 +59,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-research",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -64,6 +70,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-infra",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",
@@ -74,6 +81,7 @@
       "owner": "Plasma-Engine",
       "repo": "plasma-engine-shared",
       "workflow": "autopilot.yml",
+      "ref": "main",
       "inputs": {
         "dry_run": "false",
         "target_branch": "main",

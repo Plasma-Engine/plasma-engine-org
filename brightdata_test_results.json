@@ -1,0 +1,62 @@
+{
+  "Twitter/X_unlocker": {
+    "platform": "Twitter/X",
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "Twitter/X_dataset": {
+    "platform": "Twitter/X",
+    "success": false,
+    "method": "dataset_api",
+    "status_code": 404
+  },
+  "LinkedIn_unlocker": {
+    "platform": "LinkedIn",
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "LinkedIn_dataset": {
+    "platform": "LinkedIn",
+    "success": false,
+    "method": "dataset_api",
+    "status_code": 404
+  },
+  "Instagram_unlocker": {
+    "platform": "Instagram",
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "Instagram_dataset": {
+    "platform": "Instagram",
+    "success": false,
+    "method": "dataset_api",
+    "status_code": 404
+  },
+  "TikTok_unlocker": {
+    "platform": "TikTok",
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "TikTok_dataset": {
+    "platform": "TikTok",
+    "success": false,
+    "method": "dataset_api",
+    "status_code": 404
+  },
+  "YouTube_unlocker": {
+    "platform": "YouTube",
+    "success": false,
+    "error": "Not found",
+    "status_code": 404
+  },
+  "YouTube_dataset": {
+    "platform": "YouTube",
+    "success": false,
+    "method": "dataset_api",
+    "status_code": 404
+  }
+}

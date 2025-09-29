@@ -1,0 +1,53 @@
+codecov:
+  require_ci_to_pass: yes
+  notify:
+    after_n_builds: 5  # Wait for all service builds
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    project:
+      default:
+        target: 90%
+        threshold: 1%
+        if_no_uploads: error
+    patch:
+      default:
+        target: 80%
+        threshold: 5%
+
+# Service-specific coverage configuration
+flags:
+  research:
+    paths:
+      - plasma-engine-research/app/
+  content:
+    paths:
+      - plasma-engine-content/app/
+  brand:
+    paths:
+      - plasma-engine-brand/app/
+  agent:
+    paths:
+      - plasma-engine-agent/app/
+  gateway:
+    paths:
+      - plasma-engine-gateway/src/
+
+comment:
+  layout: "header, diff, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+
+ignore:
+  - "tests/"
+  - "**/__pycache__/"
+  - "**/*.pyc"
+  - "**/node_modules/"
+  - "**/coverage/"
+  - "scripts/"

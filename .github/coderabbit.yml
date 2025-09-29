@@ -1,0 +1,220 @@
+# CodeRabbit Configuration for Plasma Engine
+# Automated PR review settings for cursor agent implementations
+
+version: '1.0'
+
+# Review Configuration
+reviews:
+  # Enable automatic reviews
+  auto_review:
+    enabled: true
+
+    # Skip review for PRs with these keywords in title
+    ignore_title_keywords:
+      - 'WIP'
+      - 'DO NOT REVIEW'
+      - 'DRAFT'
+
+  # High-level review instructions
+  high_level_summary: |
+    Review this PR for the Plasma Engine microservices platform.
+    Focus on:
+    - Code quality and best practices
+    - Security vulnerabilities
+    - Performance implications
+    - Test coverage
+    - Documentation completeness
+
+  # Path-specific review instructions
+  path_filters:
+    # Python services (Research, Brand, Content, Agent)
+    - path: '**/*.py'
+      extra_instructions: |
+        - Ensure Python 3.11+ compatibility
+        - Verify type hints are present for all functions
+        - Check for proper async/await usage
+        - Validate Pydantic models
+        - Ensure proper error handling
+        - Verify logging is structured (structlog)
+        - Check for SQL injection vulnerabilities
+        - Validate Celery task configurations
+
+    # TypeScript/JavaScript (Gateway)
+    - path: '**/*.ts'
+      extra_instructions: |
+        - Verify TypeScript strict mode compliance
+        - Check for proper error handling in async functions
+        - Validate GraphQL resolver implementations
+        - Ensure JWT handling is secure
+        - Check for XSS vulnerabilities
+        - Verify proper Apollo Gateway configuration
+
+    # GraphQL schemas
+    - path: '**/*.graphql'
+      extra_instructions: |
+        - Validate schema syntax
+        - Check for N+1 query problems
+        - Ensure proper federation directives
+        - Verify field deprecations are documented
+
+    # Docker files
+    - path: '**/Dockerfile'
+      extra_instructions: |
+        - Check for security best practices
+        - Verify multi-stage builds are used
+        - Ensure no secrets in build args
+        - Validate base image versions
+
+    # Configuration files
+    - path: '**/*.yml'
+      extra_instructions: |
+        - Validate YAML syntax
+        - Check for exposed secrets
+        - Verify environment variables are documented
+
+    # Documentation
+    - path: '**/*.md'
+      extra_instructions: |
+        - Check for spelling and grammar
+        - Verify code examples are accurate
+        - Ensure links are not broken
+
+    # Test files
+    - path: '**/test_*.py'
+      extra_instructions: |
+        - Verify test coverage is adequate
+        - Check for proper mocking
+        - Ensure tests are deterministic
+        - Validate async test handling
+
+    # Requirements files
+    - path: '**/requirements*.txt'
+      extra_instructions: |
+        - Check for security vulnerabilities
+        - Verify version pinning
+        - Ensure no conflicting dependencies
+
+    # Package files
+    - path: '**/package.json'
+      extra_instructions: |
+        - Check for security vulnerabilities
+        - Verify version compatibility
+        - Ensure scripts are documented
+
+# Language model configuration
+language_model:
+  model: 'gpt-4-turbo-preview'
+  temperature: 0.2
+
+# Tool integrations
+tools:
+  # Python tools
+  ruff:
+    enabled: true
+
+  pylint:
+    enabled: true
+
+  mypy:
+    enabled: true
+
+  # JavaScript/TypeScript tools
+  eslint:
+    enabled: true
+
+  prettier:
+    enabled: true
+
+  # Security tools
+  semgrep:
+    enabled: true
+
+  # Docker tools
+  hadolint:
+    enabled: true
+
+# Enable early access features
+early_access:
+  enabled: true
+
+# Custom commands
+commands:
+  - name: '/plasma-check'
+    description: 'Run Plasma Engine specific checks'
+    enabled: true
+
+  - name: '/security-scan'
+    description: 'Run comprehensive security analysis'
+    enabled: true
+
+# Review triggers
+triggers:
+  # Review on PR creation
+  on_pull_request:
+    enabled: true
+
+  # Review on new commits
+  on_push:
+    enabled: true
+
+  # Review on comment triggers
+  on_comment:
+    enabled: true
+    keywords:
+      - '@coderabbitai review'
+      - '@coderabbitai full review'
+
+# Performance settings
+performance:
+  # Maximum files to review in one pass
+  max_files: 50
+
+  # Maximum lines per file
+  max_lines_per_file: 1000
+
+  # Timeout for review completion
+  timeout_minutes: 10
+
+# Notification settings
+notifications:
+  # Post review summary as comment
+  post_summary: true
+
+  # Mention PR author in critical issues
+  mention_on_critical: true
+
+  # Status check requirements
+  status_check:
+    enabled: true
+    blocking: false  # Don't block merge on review
+
+# Phase 1 specific settings
+phase_1:
+  # Focus areas for Phase 1
+  focus_areas:
+    - 'Service initialization'
+    - 'GraphQL federation setup'
+    - 'Authentication implementation'
+    - 'Database connections'
+    - 'API endpoint creation'
+    - 'Async task processing'
+
+  # Required checks for Phase 1
+  required_checks:
+    - 'Test coverage > 80%'
+    - 'No security vulnerabilities'
+    - 'Documentation present'
+    - 'Type hints complete'
+    - 'Error handling implemented'
+
+# Cursor agent specific instructions
+cursor_agent_mode:
+  enabled: true
+  instructions: |
+    This PR is likely generated by a cursor agent implementing Phase 1 tickets.
+    Pay special attention to:
+    - Ticket requirements fulfillment
+    - Integration with other services
+    - Proper error handling
+    - Test completeness
+    - Documentation accuracy

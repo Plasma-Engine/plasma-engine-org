@@ -54,4 +54,24 @@
   requirements for local runs, and cleaned `__pycache__` artifacts after manual
   Python execution attempts.
 
+## 2025-09-26
+
+- Files touched:
+  - `config/autopilot/targets.json` (new multi-repo dispatch matrix)
+  - `scripts/automation/autopilot_dispatcher.py` (fresh dispatcher utility)
+- Commands run:
+  - N/A — scripted changes applied via Cursor automation (no shell commands executed yet)
+- Notes:
+  - Added `ref` and workflow input metadata so downstream automation can safely
+    trigger `autopilot.yml` across the Plasma Engine repos.
+  - Auth plumbing depends on `GITHUB_TOKEN`; dispatcher exits early if the
+    token is missing to prevent partial runs.
+  - `# TODO(jf-platform, 2025-09-26)` embedded in the dispatcher to track future
+    work around per-repo credential overrides.
+- Next actions:
+  - Run the new dispatcher with `--dry-run` to verify payloads before the first
+    live execution.
+  - Extend the target list as additional repos come online (e.g. analytics or
+    tooling satellites).
+
 

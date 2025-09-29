@@ -1,0 +1,958 @@
+{
+  "info": {
+    "name": "Plasma Engine API",
+    "description": "Complete API collection for the Plasma Engine platform - Enterprise AI Platform for Research Automation, Brand Intelligence, and Content Orchestration",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT authentication token"
+    },
+    {
+      "key": "document_id",
+      "value": "",
+      "type": "string",
+      "description": "Document ID for testing"
+    },
+    {
+      "key": "content_id",
+      "value": "",
+      "type": "string",
+      "description": "Content ID for testing"
+    },
+    {
+      "key": "workflow_id",
+      "value": "",
+      "type": "string",
+      "description": "Workflow ID for testing"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticate user and receive JWT tokens"
+          },
+          "response": [
+            {
+              "name": "Successful Login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePassword123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"expiresIn\": 3600,\n  \"user\": {\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"email\": \"user@example.com\",\n    \"name\": \"John Doe\",\n    \"organization\": {\n      \"id\": \"org_123\",\n      \"name\": \"Example Corp\"\n    },\n    \"role\": \"user\",\n    \"permissions\": [\"read\", \"write\"]\n  }\n}"
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', response.accessToken);",
+                  "    pm.test('Login successful', () => {",
+                  "        pm.expect(response.accessToken).to.exist;",
+                  "        pm.expect(response.user).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Get new JWT token using refresh token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "System Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check the health status of all services"
+          },
+          "response": [
+            {
+              "name": "Healthy Services",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/health",
+                  "host": ["{{base_url}}"],
+                  "path": ["health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"status\": \"healthy\",\n  \"timestamp\": \"2024-01-15T10:30:00Z\",\n  \"services\": {\n    \"database\": { \"status\": \"healthy\", \"responseTime\": \"5ms\" },\n    \"redis\": { \"status\": \"healthy\", \"responseTime\": \"2ms\" },\n    \"research\": { \"status\": \"healthy\", \"responseTime\": \"15ms\" },\n    \"brand\": { \"status\": \"healthy\", \"responseTime\": \"12ms\" },\n    \"content\": { \"status\": \"healthy\", \"responseTime\": \"18ms\" },\n    \"agent\": { \"status\": \"healthy\", \"responseTime\": \"20ms\" }\n  },\n  \"version\": \"1.0.0\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Readiness Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ready",
+              "host": ["{{base_url}}"],
+              "path": ["ready"]
+            },
+            "description": "Check if the service is ready to handle requests"
+          }
+        },
+        {
+          "name": "Prometheus Metrics",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["metrics"]
+            },
+            "description": "Get Prometheus metrics for monitoring"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GraphQL",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Me { me { id email name organization { id name } permissions createdAt } }\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get current authenticated user information via GraphQL"
+          }
+        },
+        {
+          "name": "Knowledge Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query KnowledgeQuery($input: KnowledgeQueryInput!) { knowledgeQuery(input: $input) { answer sources { title url relevanceScore excerpt } confidence reasoning followUpQuestions } }\",\n  \"variables\": {\n    \"input\": {\n      \"query\": \"What are the latest trends in artificial intelligence?\",\n      \"sources\": [\"documents\", \"web\"],\n      \"maxTokens\": 4000,\n      \"includeSource\": true\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Perform a GraphRAG knowledge query"
+          }
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Documents($skip: Int, $limit: Int) { documents(skip: $skip, limit: $limit) { id filename status size uploadedAt processedAt tags } }\",\n  \"variables\": {\n    \"skip\": 0,\n    \"limit\": 10\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Get list of documents via GraphQL"
+          }
+        },
+        {
+          "name": "Generate Content",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation GenerateContent($input: ContentGenerationInput!) { generateContent(input: $input) { id content status wordCount variations { id content score } metadata { model generatedAt } } }\",\n  \"variables\": {\n    \"input\": {\n      \"type\": \"blog_post\",\n      \"prompt\": \"Write a blog post about the future of AI in healthcare, focusing on benefits and challenges.\",\n      \"parameters\": {\n        \"model\": \"gpt-4\",\n        \"temperature\": 0.7,\n        \"maxTokens\": 2000,\n        \"tone\": \"professional\",\n        \"audience\": \"healthcare professionals\"\n      }\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Generate content using AI via GraphQL"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Document file to upload"
+                },
+                {
+                  "key": "tags",
+                  "value": "AI,research,machine-learning",
+                  "description": "Comma-separated tags",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Research paper on machine learning applications",
+                  "description": "Document description",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/documents",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "documents"]
+            },
+            "description": "Upload a new document for processing"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('document_id', response.id);",
+                  "    pm.test('Document uploaded successfully', () => {",
+                  "        pm.expect(response.id).to.exist;",
+                  "        pm.expect(response.filename).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/documents?skip=0&limit=10&search=&status=processed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "documents"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of documents to skip"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of documents to return"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search term"
+                },
+                {
+                  "key": "status",
+                  "value": "processed",
+                  "description": "Filter by processing status"
+                }
+              ]
+            },
+            "description": "Get a paginated list of documents"
+          }
+        },
+        {
+          "name": "Get Document",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/documents/{{document_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "documents", "{{document_id}}"]
+            },
+            "description": "Get detailed information about a specific document"
+          }
+        },
+        {
+          "name": "Delete Document",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/documents/{{document_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "documents", "{{document_id}}"]
+            },
+            "description": "Delete a document and all associated data"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Knowledge Management",
+      "item": [
+        {
+          "name": "GraphRAG Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"What are the main applications of machine learning in healthcare?\",\n  \"sources\": [\"documents\", \"web\"],\n  \"maxTokens\": 4000,\n  \"includeSource\": true,\n  \"language\": \"auto\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/knowledge/query",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "knowledge", "query"]
+            },
+            "description": "Perform a GraphRAG query against the knowledge base"
+          }
+        },
+        {
+          "name": "Search Entities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/knowledge/entities?search=artificial intelligence&type=Concept&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "knowledge", "entities"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "artificial intelligence",
+                  "description": "Search term for entity names"
+                },
+                {
+                  "key": "type",
+                  "value": "Concept",
+                  "description": "Filter by entity type"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Maximum number of entities to return"
+                }
+              ]
+            },
+            "description": "Search for entities in the knowledge graph"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Brand Monitoring",
+      "item": [
+        {
+          "name": "Get Brand Mentions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/brand/mentions?brandId={{brand_id}}&skip=0&limit=20&sentiment=&startDate=&endDate=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "brand", "mentions"],
+              "query": [
+                {
+                  "key": "brandId",
+                  "value": "{{brand_id}}",
+                  "description": "Brand ID to get mentions for"
+                },
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of mentions to skip"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Maximum number of mentions to return"
+                },
+                {
+                  "key": "sentiment",
+                  "value": "",
+                  "description": "Filter by sentiment (positive, negative, neutral)"
+                },
+                {
+                  "key": "startDate",
+                  "value": "",
+                  "description": "Start date for mention range (ISO 8601)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "",
+                  "description": "End date for mention range (ISO 8601)"
+                }
+              ]
+            },
+            "description": "Retrieve brand mentions with filtering options"
+          }
+        },
+        {
+          "name": "Analyze Sentiment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"I absolutely love this new product! The quality is amazing and customer service was excellent. Highly recommend to everyone!\",\n  \"language\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/brand/sentiment/analyze",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "brand", "sentiment", "analyze"]
+            },
+            "description": "Perform sentiment analysis on provided text"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Content Generation",
+      "item": [
+        {
+          "name": "Generate Content",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"blog_post\",\n  \"prompt\": \"Write a comprehensive blog post about the benefits of remote work for both employees and employers. Include statistics and real-world examples.\",\n  \"parameters\": {\n    \"model\": \"gpt-4\",\n    \"temperature\": 0.7,\n    \"maxTokens\": 2000,\n    \"tone\": \"professional\",\n    \"audience\": \"business professionals and HR managers\"\n  },\n  \"brandGuidelines\": {\n    \"voice\": \"Professional yet approachable\",\n    \"style\": \"Informative with actionable insights\",\n    \"keywords\": [\"remote work\", \"productivity\", \"work-life balance\"],\n    \"restrictions\": [\"Avoid controversial topics\", \"Keep content family-friendly\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/content/generate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "content", "generate"]
+            },
+            "description": "Generate content using AI with specific parameters and brand guidelines"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('content_id', response.id);",
+                  "    pm.test('Content generated successfully', () => {",
+                  "        pm.expect(response.id).to.exist;",
+                  "        pm.expect(response.content).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Schedule Content Publishing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"platforms\": [\"twitter\", \"linkedin\", \"blog\"],\n  \"scheduledAt\": \"2024-01-20T10:00:00Z\",\n  \"approvers\": [\"user_123\", \"manager_456\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/content/{{content_id}}/publish",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "content", "{{content_id}}", "publish"]
+            },
+            "description": "Schedule generated content for publishing to multiple platforms"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agent Workflows",
+      "item": [
+        {
+          "name": "List Workflows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/workflows?skip=0&limit=10&status=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "workflows"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0",
+                  "description": "Number of workflows to skip"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Maximum number of workflows to return"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by workflow status"
+                }
+              ]
+            },
+            "description": "Get list of available agent workflows"
+          }
+        },
+        {
+          "name": "Create Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Content Research and Generation Workflow\",\n  \"description\": \"Automated workflow to research a topic and generate a comprehensive blog post\",\n  \"steps\": [\n    {\n      \"id\": \"research\",\n      \"type\": \"data_collection\",\n      \"name\": \"Research Topic\",\n      \"description\": \"Gather information about the specified topic\",\n      \"configuration\": {\n        \"sources\": [\"web\", \"documents\", \"news\"],\n        \"maxSources\": 10,\n        \"keywords\": []\n      },\n      \"dependencies\": [],\n      \"timeout\": 300\n    },\n    {\n      \"id\": \"analyze\",\n      \"type\": \"analysis\",\n      \"name\": \"Analyze Research\",\n      \"description\": \"Analyze gathered information and extract key insights\",\n      \"configuration\": {\n        \"analysisType\": \"content_analysis\",\n        \"extractEntities\": true,\n        \"identifyTrends\": true\n      },\n      \"dependencies\": [\"research\"],\n      \"timeout\": 180\n    },\n    {\n      \"id\": \"generate\",\n      \"type\": \"content_generation\",\n      \"name\": \"Generate Content\",\n      \"description\": \"Create blog post based on research and analysis\",\n      \"configuration\": {\n        \"contentType\": \"blog_post\",\n        \"model\": \"gpt-4\",\n        \"tone\": \"professional\",\n        \"wordCount\": 2000\n      },\n      \"dependencies\": [\"analyze\"],\n      \"timeout\": 240\n    },\n    {\n      \"id\": \"review\",\n      \"type\": \"approval\",\n      \"name\": \"Content Review\",\n      \"description\": \"Human review and approval of generated content\",\n      \"configuration\": {\n        \"approvers\": [\"content_manager\"],\n        \"requireAllApprovals\": false\n      },\n      \"dependencies\": [\"generate\"],\n      \"timeout\": 86400\n    }\n  ],\n  \"triggers\": [\n    {\n      \"type\": \"manual\",\n      \"configuration\": {}\n    },\n    {\n      \"type\": \"api\",\n      \"configuration\": {\n        \"webhook_url\": \"/api/v1/webhooks/content-workflow\"\n      }\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/workflows",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "workflows"]
+            },
+            "description": "Create a new multi-step agent workflow"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('workflow_id', response.id);",
+                  "    pm.test('Workflow created successfully', () => {",
+                  "        pm.expect(response.id).to.exist;",
+                  "        pm.expect(response.name).to.exist;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Execute Workflow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"input\": {\n    \"topic\": \"The Future of Artificial Intelligence in Healthcare\",\n    \"targetAudience\": \"healthcare professionals\",\n    \"keywords\": [\"AI\", \"healthcare\", \"medical AI\", \"patient care\", \"diagnostics\"],\n    \"contentLength\": \"medium\",\n    \"includeStatistics\": true\n  },\n  \"priority\": \"normal\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/workflows/{{workflow_id}}/execute",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "workflows", "{{workflow_id}}", "execute"]
+            },
+            "description": "Start execution of a workflow with input parameters"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 202) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('execution_id', response.executionId);",
+                  "    pm.test('Workflow execution started', () => {",
+                  "        pm.expect(response.executionId).to.exist;",
+                  "        pm.expect(response.status).to.be.oneOf(['queued', 'running']);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Workflow Execution Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/agent/executions/{{execution_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "agent", "executions", "{{execution_id}}"]
+            },
+            "description": "Get detailed status and progress of a workflow execution"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Examples & Use Cases",
+      "item": [
+        {
+          "name": "Complete Research Workflow",
+          "item": [
+            {
+              "name": "1. Upload Research Document",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": [],
+                      "description": "Upload a research paper or document"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "AI,research,machine-learning,healthcare",
+                      "type": "text"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Research paper on AI applications in healthcare",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/documents",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "documents"]
+                },
+                "description": "Step 1: Upload a research document to the knowledge base"
+              }
+            },
+            {
+              "name": "2. Query Knowledge Base",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"What are the key findings about AI applications in healthcare from the uploaded documents?\",\n  \"sources\": [\"documents\"],\n  \"maxTokens\": 3000,\n  \"includeSource\": true\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/knowledge/query",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "knowledge", "query"]
+                },
+                "description": "Step 2: Query the knowledge base about the uploaded document"
+              }
+            },
+            {
+              "name": "3. Generate Content Based on Research",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"blog_post\",\n  \"prompt\": \"Based on recent research findings, write a comprehensive blog post about the current state and future potential of AI in healthcare. Include benefits, challenges, and real-world applications.\",\n  \"parameters\": {\n    \"model\": \"gpt-4\",\n    \"temperature\": 0.7,\n    \"maxTokens\": 2500,\n    \"tone\": \"professional\",\n    \"audience\": \"healthcare professionals and technology enthusiasts\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/content/generate",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "content", "generate"]
+                },
+                "description": "Step 3: Generate content based on the research findings"
+              }
+            }
+          ],
+          "description": "Complete workflow example: Upload document → Query knowledge → Generate content"
+        },
+        {
+          "name": "Brand Monitoring Pipeline",
+          "item": [
+            {
+              "name": "1. Get Recent Brand Mentions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/brand/mentions?brandId={{brand_id}}&startDate=2024-01-01T00:00:00Z&endDate=2024-01-31T23:59:59Z&limit=50",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "brand", "mentions"],
+                  "query": [
+                    {
+                      "key": "brandId",
+                      "value": "{{brand_id}}"
+                    },
+                    {
+                      "key": "startDate",
+                      "value": "2024-01-01T00:00:00Z"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2024-01-31T23:59:59Z"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    }
+                  ]
+                },
+                "description": "Get brand mentions from the last month"
+              }
+            },
+            {
+              "name": "2. Analyze Mention Sentiment",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"text\": \"Just tried the new product and I'm really disappointed. The quality doesn't match the price point and customer service was unhelpful when I reached out.\",\n  \"language\": \"en\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/brand/sentiment/analyze",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "brand", "sentiment", "analyze"]
+                },
+                "description": "Analyze sentiment of specific brand mentions"
+              }
+            },
+            {
+              "name": "3. Generate Response Content",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"social_post\",\n  \"prompt\": \"Create a professional and empathetic response to address customer concerns about product quality and customer service. Acknowledge the feedback and offer a solution.\",\n  \"parameters\": {\n    \"model\": \"gpt-4\",\n    \"temperature\": 0.6,\n    \"maxTokens\": 280,\n    \"tone\": \"empathetic\",\n    \"audience\": \"concerned customers\"\n  },\n  \"brandGuidelines\": {\n    \"voice\": \"Professional, caring, solution-oriented\",\n    \"restrictions\": [\"No defensive language\", \"Always acknowledge concerns\"]\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/content/generate",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "content", "generate"]
+                },
+                "description": "Generate appropriate response content for brand mentions"
+              }
+            }
+          ],
+          "description": "Brand monitoring workflow: Get mentions → Analyze sentiment → Generate responses"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-set base URL based on environment",
+          "if (pm.environment.name === 'Production') {",
+          "    pm.collectionVariables.set('base_url', 'https://api.plasma-engine.com');",
+          "} else if (pm.environment.name === 'Staging') {",
+          "    pm.collectionVariables.set('base_url', 'https://staging-api.plasma-engine.com');",
+          "} else {",
+          "    pm.collectionVariables.set('base_url', 'http://localhost:3000');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Global test for authentication errors",
+          "pm.test('No authentication errors', function () {",
+          "    pm.expect(pm.response.code).to.not.equal(401);",
+          "});",
+          "",
+          "// Global test for rate limiting",
+          "pm.test('No rate limit exceeded', function () {",
+          "    pm.expect(pm.response.code).to.not.equal(429);",
+          "});"
+        ]
+      }
+    }
+  ]
+}
