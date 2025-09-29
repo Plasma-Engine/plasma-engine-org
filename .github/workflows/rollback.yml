@@ -1,0 +1,41 @@
+name: Rollback
+
+# Provides a controlled rollback to a previous release or Terraform state.
+# TODO: Connect to deployment environment and permissions.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to rollback to (e.g., v1.2.2)'
+        required: true
+      component:
+        description: 'Component to rollback (gateway/infra/all)'
+        required: true
+        default: 'all'
+
+jobs:
+  gateway_rollback:
+    if: ${{ inputs.component == 'gateway' || inputs.component == 'all' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Pull image
+        run: docker pull ghcr.io/${{ github.repository_owner }}/plasma-engine-gateway:${{ inputs.release_tag }}
+      - name: Deploy previous image
+        run: |
+          echo "TODO: implement environment-specific deployment (K8s/Compose)"
+
+  infra_rollback:
+    if: ${{ inputs.component == 'infra' || inputs.component == 'all' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform state revert
+        run: |
+          echo "TODO: implement state pinning and rollback plan"
+
