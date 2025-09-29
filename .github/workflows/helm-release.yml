@@ -1,0 +1,41 @@
+name: Helm - Lint, Template, (Optional) Deploy
+
+on:
+  pull_request:
+    paths:
+      - 'docs/infra-blueprint/helm/**'
+  workflow_dispatch: {}
+
+jobs:
+  helm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.14.4
+
+      - name: Lint chart
+        working-directory: docs/infra-blueprint/helm/app
+        run: helm lint .
+
+      - name: Template chart
+        working-directory: docs/infra-blueprint/helm/app
+        run: helm template test . --values values.yaml
+
+      - name: (Optional) Deploy to cluster (staging)
+        if: false # Set to true once kubeconfig/permissions are provided via secrets
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG_CONTENTS }}
+        working-directory: docs/infra-blueprint/helm/app
+        run: |
+          echo "$KUBECONFIG" > kubeconfig
+          export KUBECONFIG=$PWD/kubeconfig
+          helm upgrade --install app . -n plasma --create-namespace
+

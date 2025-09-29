@@ -101,6 +101,7 @@ open http://localhost:3000
 
 ### Architecture
 - [ADRs](docs/adrs/) - Architecture Decision Records
+- [Target-State Architecture](docs/architecture/target-state.md) - High-level diagrams (Mermaid)
 - [API Docs](docs/api/) - API Documentation
 - [Development Guide](docs/development-handbook.md)
 
@@ -111,6 +112,8 @@ open http://localhost:3000
 
 ### Operations
 - [DevOps Playbook](docs/devops-process.md)
+- [Infra Blueprint (Terraform/Helm skeletons)](docs/infra-blueprint/) – Commented IaC examples
+- [Observability Stack](docs/observability/stack.md) – Metrics/Logging/Tracing best practices
 - [Makefile Commands](Makefile) - `make help` for all commands
 
 ## 🤝 Contributing

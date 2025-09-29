@@ -1,0 +1,10 @@
+apiVersion: v2
+name: plasma-app
+description: Generic application chart for Plasma Engine services (gateway/agent/brand/content/research)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+# Notes:
+# - This chart is intentionally generic and configurable via values.yaml.
+# - Each service can reuse this chart by setting image/name/ports/resources and env.
