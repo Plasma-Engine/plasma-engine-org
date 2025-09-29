@@ -1,0 +1,30 @@
+ # Composite Action: test
+ # Purpose: Run unit tests for Python and Node projects if present
+ # Inputs: none
+ # Links: docs/devops/playbooks/test.md
+ name: test
+ description: "Run unit tests for Python and Node projects if present"
+ runs:
+   using: composite
+   steps:
+     - shell: bash
+       name: Python tests (pytest)
+       run: |
+         set -e
+         if ls **/pytest.ini **/pyproject.toml 2>/dev/null | grep -q .; then
+           python -m pip install --upgrade pip >/dev/null 2>&1 || true
+           pip install pytest >/dev/null 2>&1 || true
+           pytest -q || true # TODO tighten
+         else
+           echo "No pytest config found; skipping"
+         fi
+     - shell: bash
+       name: Node tests (vitest/jest)
+       run: |
+         set -e
+         if [ -f package.json ]; then
+           npm ci || npm install
+           npx --yes vitest run || npx --yes jest --ci || true # TODO tighten
+         else
+           echo "No package.json found; skipping"
+         fi

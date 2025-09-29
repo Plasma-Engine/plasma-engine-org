@@ -1,0 +1,29 @@
+ # Composite Action: package
+ # Purpose: Produce artifacts (Python wheels, npm packages, or container images)
+ # Inputs: none currently
+ # Links: docs/devops/playbooks/package.md
+ name: package
+ description: "Produce build artifacts"
+ runs:
+   using: composite
+   steps:
+     - shell: bash
+       name: Python package placeholder
+       run: |
+         set -e
+         if [ -f pyproject.toml ]; then
+           python -m pip install --upgrade pip build >/dev/null 2>&1 || true
+           python -m build || true # TODO tighten
+         else
+           echo "No pyproject.toml; skipping Python package"
+         fi
+     - shell: bash
+       name: Node package placeholder
+       run: |
+         set -e
+         if [ -f package.json ]; then
+           npm ci || npm install
+           npm pack || true
+         else
+           echo "No package.json; skipping npm pack"
+         fi

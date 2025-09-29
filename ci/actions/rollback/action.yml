@@ -1,0 +1,20 @@
+ # Composite Action: rollback
+ # Purpose: Roll back a prior deployment to last known-good release
+ # Inputs: environment, release_id (optional)
+ # Links: docs/devops/playbooks/rollback.md
+ name: rollback
+ description: "Rollback last deployment"
+ inputs:
+   environment:
+     description: Target environment (dev|staging|prod)
+     required: true
+   release_id:
+     description: Optional release identifier to roll back to
+     required: false
+ runs:
+   using: composite
+   steps:
+     - shell: bash
+       name: Rollback placeholder
+       run: |
+         echo "# TODO: implement rollback for environment=${{ inputs.environment }} release=${{ inputs.release_id }}"
