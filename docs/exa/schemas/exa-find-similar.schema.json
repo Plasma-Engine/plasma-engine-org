@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://plasma-engine.org/docs/exa/schemas/exa-find-similar.schema.json",
+  "$comment": "Source: https://docs.exa.ai/reference/find-similar (TODO: verify via Rube MCP)",
+  "title": "Exa Find Similar Request (Placeholder)",
+  "description": "Placeholder schema for Exa Find Similar request body.",
+  "type": "object",
+  "properties": {
+    "url": { "type": "string", "format": "uri" },
+    "query": { "type": "string", "description": "Optional query for similarity search." },
+    "numResults": { "type": "integer", "minimum": 1, "maximum": 100, "default": 10 }
+  },
+  "required": ["url"],
+  "additionalProperties": true,
+  "$comment:note": "TODO(research@plasma): Confirm if document IDs are supported and ranking options."
+}
+
