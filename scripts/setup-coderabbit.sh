@@ -6,8 +6,72 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Usage function
+usage() {
+  cat << EOF
+Usage: $0 [OPTIONS]
+
+Configure CodeRabbit for all Plasma Engine repositories.
+
+OPTIONS:
+  -d, --dir DIR     Base directory containing repositories
+                    (default: current directory's parent, or CODEBASE_DIR env var)
+  -h, --help        Show this help message
+
+ENVIRONMENT:
+  CODEBASE_DIR      Base directory for repositories (overridden by -d flag)
+
+EXAMPLES:
+  # Use current directory's parent
+  $0
+
+  # Use specific directory
+  $0 -d /path/to/repositories
+
+  # Use environment variable
+  export CODEBASE_DIR=/path/to/repositories
+  $0
+
+EOF
+  exit 0
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -d|--dir)
+      BASE_DIR="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    *)
+      echo "Unknown option: $1"
+      usage
+      ;;
+  esac
+done
+
+# Set BASE_DIR with precedence: CLI arg > env var > default (parent directory)
+if [[ -z "${BASE_DIR:-}" ]]; then
+  if [[ -n "${CODEBASE_DIR:-}" ]]; then
+    BASE_DIR="$CODEBASE_DIR"
+  else
+    # Default to parent directory of current repo
+    BASE_DIR="$(dirname "$(pwd)")"
+  fi
+fi
+
+# Ensure BASE_DIR is absolute
+BASE_DIR="$(cd "$BASE_DIR" && pwd)" || {
+  echo -e "${YELLOW}⚠${NC} Invalid base directory: $BASE_DIR"
+  exit 1
+}
+
+echo -e "${BLUE}Using base directory: ${BASE_DIR}${NC}"
+
 GITHUB_ORG="Plasma-Engine"
-BASE_DIR="/Users/a004/Library/Mobile Documents/com~apple~CloudDocs/Documents/CODE_PROJECTS/plasma-engine-org"
 REPOS=(
   plasma-engine-gateway
   plasma-engine-research
