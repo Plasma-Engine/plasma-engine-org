@@ -12,6 +12,10 @@ on:
 
 jobs:
   claude-review:
+    # Prevent this job from running (and hard-failing) on PRs from forks,
+    # since those builds do not have access to repository secrets.
+    if: ${{ github.event.pull_request.head.repo.fork == false }}
+
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||
