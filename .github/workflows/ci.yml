@@ -1,0 +1,37 @@
+name: Org CI
+
+on:
+  push:
+    branches: [ main, "**" ]
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate Docs & IaC
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install tooling (best-effort)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+      - name: Terraform fmt (if installed)
+        run: |
+          if command -v terraform >/dev/null 2>&1; then terraform fmt -recursive -check; else echo "terraform not installed"; fi
+      - name: Validate YAML (best-effort)
+        run: |
+          echo "# TODO: add yamllint step"
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: org-artifacts
+          path: |
+            docs/devops/**/*
+            ci/**/*
+            plasma-engine-infra/infra/terraform/**/*

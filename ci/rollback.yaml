@@ -1,0 +1,20 @@
+# Rollback Workflow
+# Purpose: Restore previous known-good versions of infrastructure and services
+# Inputs: previous artifact versions, environment
+# Outputs: rolled-back services, incident notes
+# References: docs/devops/playbooks/README.md
+
+version: "1"
+stages:
+  - rollback
+
+jobs:
+  rollback:
+    stage: rollback
+    steps:
+      - name: Rollback application
+        run: |
+          echo "# TODO: orchestrated rollback (helm rollback, blue/green swap, etc.)"
+      - name: Revert infra change (if needed)
+        run: |
+          echo "# TODO: terraform apply with previous state"
