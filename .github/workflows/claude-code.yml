@@ -1,0 +1,127 @@
+name: Claude Code AI Assistant
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  claude-respond:
+    name: Claude Code Response
+    runs-on: ubuntu-latest
+    # Only run if @claude is mentioned OR if comment is from coderabbitai
+    if: |
+      (github.event_name == 'issue_comment' && (contains(github.event.comment.body, '@claude') || github.event.comment.user.login == 'coderabbitai[bot]')) ||
+      (github.event_name == 'pull_request_review_comment' && (contains(github.event.comment.body, '@claude') || github.event.comment.user.login == 'coderabbitai[bot]')) ||
+      github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Claude Code Action
+        run: npm install -g @anthropic-ai/claude-code-action
+
+      - name: Determine prompt based on trigger
+        id: set-prompt
+        run: |
+          if [[ "${{ github.event_name }}" == "issue_comment" ]] || [[ "${{ github.event_name }}" == "pull_request_review_comment" ]]; then
+            COMMENT_BODY="${{ github.event.comment.body }}"
+            COMMENT_USER="${{ github.event.comment.user.login }}"
+
+            if [[ "$COMMENT_USER" == "coderabbitai[bot]" ]]; then
+              # CodeRabbit comment - extract suggestions and action them
+              echo "PROMPT<<EOF" >> $GITHUB_OUTPUT
+              echo "CodeRabbit has left the following review feedback. Please analyze it and implement all suggested changes:" >> $GITHUB_OUTPUT
+              echo "" >> $GITHUB_OUTPUT
+              echo "$COMMENT_BODY" >> $GITHUB_OUTPUT
+              echo "" >> $GITHUB_OUTPUT
+              echo "Instructions:" >> $GITHUB_OUTPUT
+              echo "1. Read and understand all CodeRabbit suggestions" >> $GITHUB_OUTPUT
+              echo "2. Implement each suggestion that improves code quality, security, or performance" >> $GITHUB_OUTPUT
+              echo "3. Run tests to verify changes don't break functionality" >> $GITHUB_OUTPUT
+              echo "4. Commit changes with descriptive messages referencing CodeRabbit's suggestions" >> $GITHUB_OUTPUT
+              echo "5. Reply to CodeRabbit's comment confirming what was implemented" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+            else
+              # User mentioned @claude
+              echo "PROMPT<<EOF" >> $GITHUB_OUTPUT
+              echo "$COMMENT_BODY" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+            fi
+          else
+            # PR opened/updated - do automated review
+            echo "PROMPT<<EOF" >> $GITHUB_OUTPUT
+            echo "Review this PR for:" >> $GITHUB_OUTPUT
+            echo "- Code quality and best practices" >> $GITHUB_OUTPUT
+            echo "- Security vulnerabilities" >> $GITHUB_OUTPUT
+            echo "- Performance issues" >> $GITHUB_OUTPUT
+            echo "- Test coverage" >> $GITHUB_OUTPUT
+            echo "- Documentation completeness" >> $GITHUB_OUTPUT
+            echo "Provide constructive feedback and suggest improvements." >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          model: "claude-3-7-sonnet-20250219"
+          timeout_minutes: 15
+          direct_prompt: ${{ steps.set-prompt.outputs.PROMPT }}
+          allowed_tools: |
+            Read
+            Write
+            Edit
+            Glob
+            Grep
+            Bash(git:*)
+            Bash(npm:*)
+            Bash(pip:*)
+            Bash(pytest:*)
+            Bash(ruff:*)
+            Bash(black:*)
+            Bash(mypy:*)
+            mcp__github__create_pull_request
+            mcp__github__create_comment
+
+      - name: Comment on CodeRabbit feedback
+        if: github.event.comment.user.login == 'coderabbitai[bot]'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const comment = `✅ @coderabbitai - I've reviewed and implemented your suggestions. Changes have been committed to this PR.`;
+
+            if (context.payload.issue) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                body: comment
+              });
+            } else if (context.payload.pull_request) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: comment
+              });
+            }

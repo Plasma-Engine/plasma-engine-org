@@ -1,4 +1,4 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
  #
  # Script: onboarding.sh
  # Purpose: Developer onboarding helper to set up local environment quickly.

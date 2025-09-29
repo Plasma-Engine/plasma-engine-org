@@ -1,11 +1,11 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
  #
  # Script: local-test.sh
  # Purpose: Convenience wrapper to run tests for Python/Node projects if present.
  #
  set -euo pipefail
 
- if ls **/pytest.ini **/pyproject.toml 2>/dev/null | grep -q .; then
+if compgen -G "**/pytest.ini" > /dev/null 2>&1 || compgen -G "**/pyproject.toml" > /dev/null 2>&1; then
    echo "[local-test] running pytest"
    python3 -m pip install --user pytest >/dev/null 2>&1 || true
    pytest -q || true

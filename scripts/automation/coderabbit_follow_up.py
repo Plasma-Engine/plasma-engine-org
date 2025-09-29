@@ -332,8 +332,12 @@ def choose_follow_up_label(
             "No CodeRabbit reviews detected; requesting a fresh analysis.",
         )
 
-    # The most recent CodeRabbit review typically lives at the end of the list.
-    latest = robot_reviews[-1]
+    # Choose the latest by submitted_at when available; otherwise preserve order.
+    robot_reviews_sorted = sorted(
+        robot_reviews,
+        key=lambda r: (r.submitted_at or ""),
+    )
+    latest = robot_reviews_sorted[-1]
 
     if latest.commit_id != pr.head_sha:
         return (

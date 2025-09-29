@@ -19,6 +19,18 @@ plasma-engine-*/
 *.log
 logs/
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+.cache/
+pytest_cache/
+.coverage
+.pytest_cache/
+
 # Temporary files
 tmp/
 temp/

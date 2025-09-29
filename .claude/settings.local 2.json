@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/opt/homebrew/bin/python3.11:*)",
+      "Bash(.venv/bin/pip install -e .)",
+      "Bash(.venv/bin/playwright install:*)",
+      "Bash(.venv/bin/pytest tests/test_browser_automation.py -v --cov=app.automation --cov-report=term-missing)",
+      "Bash(source:*)",
+      "Bash(.venv/bin/pytest tests/test_browser_automation.py tests/test_browser_api.py -v --cov=app.automation --cov=app.routers.browser --cov-report=term-missing --cov-fail-under=90)",
+      "Bash(pytest:*)",
+      "Bash(.venv/bin/pytest tests/test_browser_automation.py tests/test_browser_api.py -v --cov=app.automation --cov=app.routers.browser --cov-report=term-missing)",
+      "Bash(.venv/bin/pytest tests/test_browser_automation.py -v --cov=app.automation --cov-report=term-missing --cov-report=html)",
+      "Bash(.venv/bin/pytest tests/test_browser_automation.py -v -k \"test_health_status or test_get_context\")",
+      "Bash(.venv/bin/pip install -e \".[dev]\")",
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then)",
+      "Bash(echo \"Updated: $file\")",
+      "Bash(fi)",
+      "Bash(done)",
+      "Bash(cd:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

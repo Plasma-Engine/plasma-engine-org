@@ -1,4 +1,4 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
  #
  # Script: deploy.sh
  # Purpose: Placeholder to orchestrate deployments from local or CI.

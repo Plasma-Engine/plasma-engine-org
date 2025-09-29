@@ -13,6 +13,6 @@
        - uses: actions/setup-python@v5
          with:
            python-version: '3.13'
-       - name: Package artifacts
-         uses: ./.github/../ci/actions/package
+      - name: Package artifacts
+        uses: ./ci/actions/package
 

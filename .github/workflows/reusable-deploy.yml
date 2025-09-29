@@ -13,8 +13,8 @@
      runs-on: ubuntu-latest
      steps:
        - uses: actions/checkout@v4
-       - name: Deploy
-         uses: ./.github/../ci/actions/deploy
+      - name: Deploy
+        uses: ./ci/actions/deploy
          with:
            environment: ${{ inputs.environment }}
            service: ${{ inputs.service }}

@@ -13,8 +13,8 @@
      runs-on: ubuntu-latest
      steps:
        - uses: actions/checkout@v4
-       - name: Rollback
-         uses: ./.github/../ci/actions/rollback
+      - name: Rollback
+        uses: ./ci/actions/rollback
          with:
            environment: ${{ inputs.environment }}
            release_id: ${{ inputs.release_id }}

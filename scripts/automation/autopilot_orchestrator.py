@@ -57,8 +57,6 @@ class AutopilotSettings:
     classifier_override: dict[str, str] = field(default_factory=dict)
     coderabbit_logins: set[str] = field(default_factory=lambda: {"coderabbitai[bot]", "coderabbitai"})
     required_status_contexts: set[str] = field(default_factory=set)
-    status_poll_delay: float = 5.0
-    status_poll_attempts: int = 3
 
 
 @dataclass(slots=True)
@@ -165,23 +163,6 @@ def load_settings() -> AutopilotSettings:
 
     dry_run = _parse_bool(os.environ.get("AUTOPILOT_DRY_RUN"))
 
-    status_poll_delay_raw = os.environ.get("AUTOPILOT_STATUS_POLL_DELAY", "5")
-    status_poll_attempts_raw = os.environ.get("AUTOPILOT_STATUS_POLL_ATTEMPTS", "3")
-
-    try:
-        status_poll_delay = float(status_poll_delay_raw)
-    except ValueError as exc:
-        raise SystemExit(
-            f"AUTOPILOT_STATUS_POLL_DELAY must be numeric; received '{status_poll_delay_raw}'"
-        ) from exc
-
-    try:
-        status_poll_attempts = int(status_poll_attempts_raw)
-    except ValueError as exc:
-        raise SystemExit(
-            f"AUTOPILOT_STATUS_POLL_ATTEMPTS must be an integer; received '{status_poll_attempts_raw}'"
-        ) from exc
-
     return AutopilotSettings(
         owner=owner,
         repo=repo,
@@ -192,8 +173,6 @@ def load_settings() -> AutopilotSettings:
         classifier_override=classifier_override,
         coderabbit_logins=coderabbit_logins,
         required_status_contexts=required_status_contexts,
-        status_poll_delay=status_poll_delay,
-        status_poll_attempts=status_poll_attempts,
     )
 
 
@@ -318,6 +297,27 @@ def fetch_pull_request_details(settings: AutopilotSettings, pr_number: int) -> d
         method="GET",
         path=f"/repos/{settings.owner}/{settings.repo}/pulls/{pr_number}",
     )
+
+
+def checks_successful(*, settings: AutopilotSettings, sha: str) -> tuple[bool, list[str]]:
+    """Check whether all check-runs are successful.
+
+    Returns a tuple ``(is_success, notes)`` so callers can surface the reason
+    a merge was skipped in the final report.
+    """
+    resp = github_request(
+        settings=settings,
+        method="GET",
+        path=f"/repos/{settings.owner}/{settings.repo}/commits/{sha}/check-runs",
+        query={"per_page": 100},
+    )
+    runs = resp.get("check_runs", []) if resp else []
+    if not runs:
+        return True, []  # no checks present
+    failing = [r["name"] for r in runs if r.get("conclusion") not in {"success", "neutral", "skipped"}]
+    if failing:
+        return False, ["Failing check-runs: " + ", ".join(sorted(failing))]
+    return True, []
 
 
 def combined_status_success(settings: AutopilotSettings, sha: str) -> tuple[bool, list[str]]:
@@ -453,6 +453,10 @@ def attempt_merge(
     status_ok, status_notes = combined_status_success(settings, pr.head_sha)
     if not status_ok:
         return False, status_notes
+
+    checks_ok, check_notes = checks_successful(settings=settings, sha=pr.head_sha)
+    if not checks_ok:
+        return False, check_notes
 
     if settings.dry_run:
         return False, [
