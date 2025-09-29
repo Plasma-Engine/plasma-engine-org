@@ -1,0 +1,38 @@
+- id: boot-por
+  title: Bootstrap orchestrator plan files and initial PR
+  scope: [plasma-engine-org]
+  path: [/Users/a004/Library/Mobile Documents/com~apple~CloudDocs/Documents/CODE_PROJECTS/plasma-engine-org]
+  owner-role: Infra/Ops
+  status: in-progress
+  deps: []
+  risk: low
+  estimate: 0.5h
+- id: verify-gh
+  title: Verify GitHub auth and org/repo mapping
+  scope: [org]
+  path: []
+  owner-role: Planner/Coordinator
+  status: done
+  deps: []
+  risk: low
+  estimate: 0.2h
+- id: seed-ci
+  title: Enumerate Make targets and CI for each repo
+  scope: [all]
+  path:
+    - /Users/a004/Library/Mobile Documents/com~apple~CloudDocs/Documents/CODE_PROJECTS/plasma-engine-org
+  owner-role: Research/Docs
+  status: todo
+  deps: [boot-por]
+  risk: low
+  estimate: 1h
+- id: pr-coderabbit
+  title: Open PR for orchestrator scaffold and request CodeRabbit review
+  scope: [plasma-engine-org]
+  path:
+    - /Users/a004/Library/Mobile Documents/com~apple~CloudDocs/Documents/CODE_PROJECTS/plasma-engine-org
+  owner-role: Planner/Coordinator
+  status: todo
+  deps: [boot-por]
+  risk: low
+  estimate: 0.3h
