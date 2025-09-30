@@ -43,14 +43,10 @@ status-all: ## Show git status for all repositories
 
 # Development Environment
 .PHONY: setup
-setup: clone-all ## Complete setup of development environment
+setup: ## Complete setup of development environment
 	@echo "Setting up development environment..."
-	cd plasma-engine-infra && docker-compose up -d
-	@echo "Installing dependencies..."
-	$(MAKE) install-deps
-	@echo "Initializing databases..."
-	$(MAKE) init-db
-	@echo "✅ Setup complete!"
+	@chmod +x scripts/dev.sh
+	@./scripts/dev.sh setup
 
 .PHONY: install-deps
 install-deps: ## Install dependencies for all services
@@ -74,14 +70,38 @@ init-db: ## Initialize all databases
 	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_content;"
 	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_agent;"
 
+# Docker Compose Commands
+.PHONY: up
+up: ## Start all services with Docker Compose
+	docker-compose up -d
+
+.PHONY: down
+down: ## Stop all services
+	docker-compose down
+
+.PHONY: restart
+restart: down up ## Restart all services
+
+.PHONY: ps
+ps: ## Show running services
+	docker-compose ps
+
+.PHONY: health
+health: ## Check service health status
+	@./scripts/dev.sh status
+
+.PHONY: up-minimal
+up-minimal: ## Start only core services (faster startup)
+	docker-compose up -d postgres redis gateway
+
 # Service Management
 .PHONY: start-infra
 start-infra: ## Start infrastructure services
-	cd plasma-engine-infra && docker-compose up -d
+	docker-compose up -d postgres redis neo4j rabbitmq
 
 .PHONY: stop-infra
 stop-infra: ## Stop infrastructure services
-	cd plasma-engine-infra && docker-compose down
+	docker-compose stop postgres redis neo4j rabbitmq
 
 .PHONY: run-gateway
 run-gateway: ## Run Gateway service
@@ -164,6 +184,48 @@ push-all: ## Push Docker images to registry
 		docker push plasma-engine/$$repo:latest; \
 	done
 
+# Database Commands
+.PHONY: db-migrate
+db-migrate: ## Run database migrations
+	@./scripts/dev.sh migrate
+
+.PHONY: db-reset
+db-reset: ## Reset all databases (WARNING: destroys data)
+	@./scripts/dev.sh reset-db
+
+.PHONY: db-seed
+db-seed: ## Load seed data
+	docker-compose exec -T postgres psql -U plasma < scripts/db/init/02-seed-data.sql
+
+.PHONY: db-backup
+db-backup: ## Backup all databases
+	@mkdir -p backups
+	docker-compose exec postgres pg_dumpall -U plasma > backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+	@echo "✅ Backup created in backups/"
+
+.PHONY: db-restore
+db-restore: ## Restore database from latest backup
+	@latest=$$(ls -t backups/*.sql | head -1); \
+	if [ -z "$$latest" ]; then \
+		echo "❌ No backup found"; \
+		exit 1; \
+	fi; \
+	echo "Restoring from $$latest..."; \
+	docker-compose exec -T postgres psql -U plasma < $$latest
+
+# Shell Access
+.PHONY: shell-gateway
+shell-gateway: ## Open Python shell in gateway service
+	docker-compose exec gateway python
+
+.PHONY: shell-postgres
+shell-postgres: ## Open PostgreSQL CLI
+	docker-compose exec postgres psql -U plasma -d plasma_engine
+
+.PHONY: shell-redis
+shell-redis: ## Open Redis CLI
+	docker-compose exec redis redis-cli
+
 # Utilities
 .PHONY: clean
 clean: ## Clean all build artifacts and dependencies
@@ -177,11 +239,15 @@ clean: ## Clean all build artifacts and dependencies
 
 .PHONY: logs
 logs: ## Show logs for all services
-	cd plasma-engine-infra && docker-compose logs -f
+	docker-compose logs -f --tail=100
 
-.PHONY: ps
-ps: ## Show running services
-	cd plasma-engine-infra && docker-compose ps
+.PHONY: logs-gateway
+logs-gateway: ## Show gateway logs
+	docker-compose logs -f --tail=100 gateway
+
+.PHONY: urls
+urls: ## Show all service URLs and credentials
+	@./scripts/dev.sh urls
 
 .PHONY: sync-templates
 sync-templates: ## Sync templates across repositories

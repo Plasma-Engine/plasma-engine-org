@@ -1,0 +1,188 @@
+# Docker Compose Override for Local Development
+# This file is automatically loaded by docker-compose and adds development-specific configurations
+
+version: '3.9'
+
+services:
+  # Enable debugging and hot reload for all services
+  gateway:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - DEBUG=true
+      - RELOAD=true
+    stdin_open: true
+    tty: true
+
+  research:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - DEBUG=true
+      - RELOAD=true
+    stdin_open: true
+    tty: true
+
+  brand:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - DEBUG=true
+      - RELOAD=true
+    stdin_open: true
+    tty: true
+
+  content:
+    environment:
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    stdin_open: true
+    tty: true
+    ports:
+      - "9229:9229"  # Node.js debugging port
+
+  agent:
+    environment:
+      - NODE_OPTIONS=--inspect=0.0.0.0:9230
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    stdin_open: true
+    tty: true
+    ports:
+      - "9230:9230"  # Node.js debugging port
+
+  # Celery Worker for Research Service (Development)
+  research-worker:
+    build:
+      context: ./plasma-engine-research
+      dockerfile: Dockerfile.dev
+    container_name: plasma-research-worker
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-plasma}:${POSTGRES_PASSWORD:-plasma_dev}@postgres:5432/plasma_research
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: ${NEO4J_USER:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-neo4j_dev}
+      REDIS_URL: redis://redis:6379/1
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-plasma}:${RABBITMQ_PASSWORD:-rabbit_dev}@rabbitmq:5672/${RABBITMQ_VHOST:-plasma}
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      ENVIRONMENT: development
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./plasma-engine-research:/app
+      - research_logs:/app/logs
+      - research_data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - plasma-net
+    command: ["celery", "-A", "app.celery_app", "worker", "--loglevel=debug", "--autoreload"]
+
+  # Celery Beat Scheduler (Development)
+  research-beat:
+    build:
+      context: ./plasma-engine-research
+      dockerfile: Dockerfile.dev
+    container_name: plasma-research-beat
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-plasma}:${POSTGRES_PASSWORD:-plasma_dev}@postgres:5432/plasma_research
+      REDIS_URL: redis://redis:6379/1
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-plasma}:${RABBITMQ_PASSWORD:-rabbit_dev}@rabbitmq:5672/${RABBITMQ_VHOST:-plasma}
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      ENVIRONMENT: development
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./plasma-engine-research:/app
+      - research_logs:/app/logs
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - plasma-net
+    command: ["celery", "-A", "app.celery_app", "beat", "--loglevel=debug"]
+
+  # Flower - Celery Monitoring Tool
+  flower:
+    image: mher/flower:latest
+    container_name: plasma-flower
+    environment:
+      CELERY_BROKER_URL: amqp://${RABBITMQ_USER:-plasma}:${RABBITMQ_PASSWORD:-rabbit_dev}@rabbitmq:5672/${RABBITMQ_VHOST:-plasma}
+      FLOWER_PORT: 5555
+      FLOWER_BASIC_AUTH: ${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-admin}
+    ports:
+      - "5555:5555"
+    depends_on:
+      - rabbitmq
+    networks:
+      - plasma-net
+
+  # MinIO for Local S3 Development
+  minio:
+    image: minio/minio:latest
+    container_name: plasma-minio
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:-minioadmin}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - plasma-net
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Elasticsearch for Development
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: plasma-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - plasma-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Kibana for Elasticsearch UI
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: plasma-kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - plasma-net
+
+volumes:
+  minio_data:
+  elasticsearch_data:

@@ -4,6 +4,7 @@ plasma-engine-*/
 # Environment
 .env
 .env.*
+!.env.example
 .github-token
 .github-config
 
@@ -23,3 +24,52 @@ logs/
 tmp/
 temp/
 *.tmp
+
+# Docker
+docker-compose.override.local.yml
+.docker/
+
+# Database backups
+backups/
+*.sql
+*.dump
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+out/
+.cache/
+
+# Development tools
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
