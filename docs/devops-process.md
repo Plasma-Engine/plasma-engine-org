@@ -55,4 +55,3 @@
 - Weekly status sync referencing Project board metrics.
 - Async updates posted to shared Slack channel `#plasma-engine-devops`.
 - All ADR proposals announced via GitHub Discussions.
-
