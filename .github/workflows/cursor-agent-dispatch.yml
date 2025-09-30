@@ -3,11 +3,17 @@ name: cursor-agent-dispatch
 on:
   pull_request:
     types: [labeled, opened, synchronize, reopened]
+  pull_request_target:
+    types: [labeled]
   workflow_dispatch:
     inputs:
       pr_number:
         description: "Pull request number to classify"
         required: false
+      force_dispatch:
+        description: "Force dispatch even if conditions aren't met"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -26,24 +32,80 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Resolve pull request number
+      - name: Check dispatch conditions
+        id: check-conditions
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Get PR number
           PR_NUMBER="${{ github.event.pull_request.number }}"
           if [ -z "$PR_NUMBER" ]; then
             PR_NUMBER="${{ inputs.pr_number }}"
           fi
+          
           if [ -z "$PR_NUMBER" ]; then
-            echo "PR number is required (provide via workflow_dispatch input)" >&2
+            echo "PR number is required" >&2
             exit 1
           fi
+          
           echo "INPUT_PR_NUMBER=$PR_NUMBER" >> "$GITHUB_ENV"
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          
+          # Check if force dispatch is enabled
+          if [ "${{ inputs.force_dispatch }}" = "true" ]; then
+            echo "Force dispatch enabled, proceeding"
+            echo "should_dispatch=true" >> "$GITHUB_OUTPUT"
+            echo "dispatch_reason=Manual force dispatch" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          
+          # Get PR labels to check dispatch conditions
+          LABELS=$(gh pr view $PR_NUMBER --json labels --jq '.labels[].name' | tr '\n' ',' || echo "")
+          echo "Current PR labels: $LABELS"
+          
+          # Check for cursor dispatch trigger labels
+          SHOULD_DISPATCH="false"
+          DISPATCH_REASON=""
+          
+          if echo "$LABELS" | grep -q "status:needs-cursor-fix"; then
+            SHOULD_DISPATCH="true"
+            DISPATCH_REASON="CodeRabbit requested cursor agent fixes"
+          elif echo "$LABELS" | grep -q "claude:repair-failed"; then
+            SHOULD_DISPATCH="true"
+            DISPATCH_REASON="Claude auto-repair failed, escalating to cursor agents"
+          elif echo "$LABELS" | grep -E "priority:(critical|high)|security|bug"; then
+            SHOULD_DISPATCH="true"
+            DISPATCH_REASON="High-priority issue requires cursor agent attention"
+          elif [ "${{ github.event.action }}" = "opened" ] || [ "${{ github.event.action }}" = "synchronize" ]; then
+            SHOULD_DISPATCH="true"
+            DISPATCH_REASON="New or updated PR requires agent classification"
+          fi
+          
+          echo "should_dispatch=$SHOULD_DISPATCH" >> "$GITHUB_OUTPUT"
+          echo "dispatch_reason=$DISPATCH_REASON" >> "$GITHUB_OUTPUT"
+          
+          if [ "$SHOULD_DISPATCH" = "false" ]; then
+            echo "No dispatch conditions met, skipping cursor agent dispatch"
+          else
+            echo "Dispatch conditions met: $DISPATCH_REASON"
+          fi
+
+      - name: Resolve pull request number
+        if: steps.check-conditions.outputs.should_dispatch == 'true'
+        run: |
+          echo "Proceeding with cursor dispatch for PR #${{ steps.check-conditions.outputs.pr_number }}"
+          echo "Reason: ${{ steps.check-conditions.outputs.dispatch_reason }}"
 
       - name: Run Cursor dispatch automation
+        if: steps.check-conditions.outputs.should_dispatch == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           CURSOR_AGENT_CLASSIFIERS: ${{ vars.CURSOR_AGENT_CLASSIFIERS }}
+          DISPATCH_REASON: ${{ steps.check-conditions.outputs.dispatch_reason }}
         run: |
-          echo "Dispatching specialized Cursor agents"
+          echo "🤖 Dispatching specialized Cursor agents"
+          echo "📋 Reason: $DISPATCH_REASON"
+          echo "🔧 PR Number: $INPUT_PR_NUMBER"
           python scripts/automation/cursor_dispatch.py
 
