@@ -1,0 +1,84 @@
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+# Add concurrency control to prevent workflow conflicts
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # Add timeout to prevent hanging workflows
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+      actions: read # Required for Claude to read CI results on PRs
+    steps:
+      - name: Check rate limits
+        id: check-rate-limit
+        run: |
+          # Add rate limit check to prevent API exhaustion
+          RATE_LIMIT=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/rate_limit" | \
+            jq '.rate.remaining')
+          echo "rate_limit=$RATE_LIMIT" >> $GITHUB_OUTPUT
+          if [ "$RATE_LIMIT" -lt 100 ]; then
+            echo "::warning::Low API rate limit: $RATE_LIMIT remaining"
+            if [ "$RATE_LIMIT" -lt 10 ]; then
+              echo "::error::API rate limit too low to proceed: $RATE_LIMIT"
+              exit 1
+            fi
+          fi
+        continue-on-error: false
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Wait for any competing workflows
+        run: |
+          # Add delay to prevent simultaneous bot conflicts
+          sleep $((RANDOM % 10 + 5))
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          # This is an optional setting that allows Claude to read CI results on PRs
+          additional_permissions: |
+            actions: read
+
+          # Add retry configuration and error handling
+          claude_args: '--model claude-opus-4-1-20250805 --max-retries 3 --retry-delay 5'
+        timeout-minutes: 25  # Ensure this step doesn't exceed job timeout
+        continue-on-error: false
+
+      - name: Handle workflow failure
+        if: failure()
+        run: |
+          echo "::error::Claude Code workflow failed. Check logs for details."
+          echo "::notice::Common causes: rate limiting, API errors, or bot conflicts"
+          # Log additional debugging information
+          echo "Event: ${{ github.event_name }}"
+          echo "Issue/PR: ${{ github.event.issue.number || github.event.pull_request.number }}"
+          echo "Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")"

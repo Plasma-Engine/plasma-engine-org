@@ -1,0 +1,118 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
+
+# Add concurrency control to prevent review conflicts
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true  # Cancel outdated reviews on new commits
+
+jobs:
+  claude-review:
+    # Prevent this job from running (and hard-failing) on PRs from forks,
+    # since those builds do not have access to repository secrets.
+    if: ${{ github.event.pull_request.head.repo.fork == false }}
+
+    # Optional: Filter by PR author
+    # if: |
+    #   github.event.pull_request.user.login == 'external-contributor' ||
+    #   github.event.pull_request.user.login == 'new-developer' ||
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 20  # Add timeout for review jobs
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Check for existing bot reviews
+        id: check-reviews
+        run: |
+          # Check if CodeRabbit or other bots have already reviewed
+          EXISTING_REVIEWS=$(gh pr view ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --json reviews \
+            --jq '.reviews | map(select(.author.login | test("bot$"; "i"))) | length')
+
+          echo "existing_bot_reviews=$EXISTING_REVIEWS" >> $GITHUB_OUTPUT
+
+          if [ "$EXISTING_REVIEWS" -gt 0 ]; then
+            echo "::notice::Found $EXISTING_REVIEWS existing bot reviews. Adding delay to prevent conflicts."
+            # Add delay to prevent bot conflicts
+            sleep 15
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+        continue-on-error: true
+
+      - name: Check rate limits
+        id: check-rate-limit
+        run: |
+          RATE_LIMIT=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ github.token }}" \
+            "https://api.github.com/rate_limit" | \
+            jq '.rate.remaining')
+          echo "rate_limit=$RATE_LIMIT" >> $GITHUB_OUTPUT
+          if [ "$RATE_LIMIT" -lt 50 ]; then
+            echo "::warning::Low API rate limit: $RATE_LIMIT remaining"
+            if [ "$RATE_LIMIT" -lt 10 ]; then
+              echo "::error::API rate limit too low for review: $RATE_LIMIT"
+              exit 1
+            fi
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request and provide feedback on:
+            - Code quality and best practices
+            - Potential bugs or issues
+            - Performance considerations
+            - Security concerns
+            - Test coverage
+
+            Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
+
+            Note: If CodeRabbit or other review bots have already commented, avoid duplicating their feedback.
+
+            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+
+          # Enhanced configuration with retry and error handling
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)" --max-retries 2 --retry-delay 10'
+        timeout-minutes: 15
+        continue-on-error: false
+
+      - name: Handle review failure
+        if: failure()
+        run: |
+          echo "::error::Claude Code Review failed"
+          echo "::notice::This may be due to rate limiting, API errors, or conflicts with other review bots"
+          # Create a simple comment about the failure
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --body "⚠️ Claude Code Review encountered an error. Please check the workflow logs for details."
+        env:
+          GH_TOKEN: ${{ github.token }}
+        continue-on-error: true
