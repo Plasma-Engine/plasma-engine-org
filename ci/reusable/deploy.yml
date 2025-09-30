@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     concurrency:
-      group: ${{ github.workflow }}-${{ inputs.environment }}-${{ inputs.service }}
+      group: ${{ github.repository }}-${{ github.workflow }}-${{ inputs.environment }}-${{ inputs.service }}
       cancel-in-progress: true
     steps:
       - name: Checkout

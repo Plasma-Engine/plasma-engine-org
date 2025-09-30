@@ -30,7 +30,7 @@ jobs:
       - name: Test
         run: |
           npm test --silent --if-present
-      - name: Artifacts: test results (if any)
+      - name: "Artifacts: test results (if any)"
         if: always()
         uses: actions/upload-artifact@v4
         with:
