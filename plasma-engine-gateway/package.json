@@ -1,0 +1,27 @@
+{
+  "name": "plasma-engine-gateway",
+  "version": "0.1.0",
+  "description": "Apollo Gateway service for Plasma Engine microservices",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "apollo",
+    "gateway",
+    "graphql",
+    "federation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/gateway": "^2.5.8",
+    "@apollo/server": "^4.10.0",
+    "graphql": "^16.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
