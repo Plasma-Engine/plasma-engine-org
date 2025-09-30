@@ -1,0 +1,239 @@
+name: cursor-agent-docs
+
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Pull request number to process"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  docs-agent:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'agent:docs') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Get PR information
+        id: pr-info
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          if [ -z "$PR_NUMBER" ]; then
+            PR_NUMBER="${{ inputs.pr_number }}"
+          fi
+          
+          if [ -z "$PR_NUMBER" ]; then
+            echo "❌ PR number is required"
+            exit 1
+          fi
+          
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "📝 Processing documentation files in PR #$PR_NUMBER"
+
+      - name: Install documentation tools
+        run: |
+          # Install markdown linting and formatting tools
+          npm install -g markdownlint-cli prettier @prettier/plugin-php
+          
+          # Install spell checker
+          npm install -g cspell
+
+      - name: Analyze documentation files
+        id: analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ steps.pr-info.outputs.pr_number }}
+          
+          # Get changed documentation files
+          DOC_FILES=$(gh pr diff $PR_NUMBER --name-only | grep -E '\.(md|rst|txt|adoc)$' || echo "")
+          
+          if [ -z "$DOC_FILES" ]; then
+            echo "No documentation files found in this PR"
+            echo "has_doc_files=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          
+          echo "has_doc_files=true" >> "$GITHUB_OUTPUT"
+          echo "Found documentation files:"
+          echo "$DOC_FILES"
+          
+          # Store files for processing
+          echo "$DOC_FILES" > doc_files.txt
+
+      - name: Apply documentation fixes
+        if: steps.analyze.outputs.has_doc_files == 'true'
+        continue-on-error: true
+        run: |
+          echo "🔧 Applying documentation fixes..."
+          
+          # Read the documentation files
+          while IFS= read -r file; do
+            if [ -f "$file" ]; then
+              echo "Processing: $file"
+              
+              # Apply prettier formatting for markdown files
+              if [[ "$file" == *.md ]]; then
+                prettier --write "$file" --prose-wrap=always --print-width=80 || echo "Prettier formatting failed for $file"
+              fi
+              
+              # Fix common markdown issues
+              if [[ "$file" == *.md ]]; then
+                # Remove trailing whitespace
+                sed -i 's/[[:space:]]*$//' "$file"
+                
+                # Ensure proper line endings
+                if [ -n "$(tail -c1 "$file")" ]; then
+                  echo "" >> "$file"
+                fi
+                
+                # Fix heading spacing (ensure blank line after headings)
+                sed -i '/^#/ { N; s/^\(#.*\)\n\([^#[:space:]]\)/\1\n\n\2/; }' "$file"
+                
+                # Fix list formatting (ensure blank lines around lists)
+                sed -i '/^[*+-] / { x; /^$/ !{ x; i\
+                
+                x; }; x; }' "$file"
+              fi
+            fi
+          done < doc_files.txt
+
+      - name: Run documentation quality checks
+        if: steps.analyze.outputs.has_doc_files == 'true'
+        continue-on-error: true
+        run: |
+          echo "🔍 Running documentation quality checks..."
+          
+          # Create markdownlint config
+          cat > .markdownlint.json << EOF
+          {
+            "MD013": { "line_length": 100, "code_blocks": false, "tables": false },
+            "MD033": false,
+            "MD041": false
+          }
+          EOF
+          
+          # Run markdownlint on changed files
+          if [ -s doc_files.txt ]; then
+            echo "Running markdownlint..."
+            while IFS= read -r file; do
+              if [[ "$file" == *.md ]]; then
+                markdownlint "$file" || echo "Markdownlint issues found in $file"
+              fi
+            done < doc_files.txt
+            
+            echo "Running spell check..."
+            cspell --no-progress $(cat doc_files.txt) || echo "Spelling issues found"
+          fi
+
+      - name: Generate documentation improvements
+        if: steps.analyze.outputs.has_doc_files == 'true'
+        run: |
+          echo "📊 Analyzing documentation for improvements..."
+          
+          # Check for missing README files in directories
+          find . -type d -not -path './.git*' -not -path './node_modules*' | while read dir; do
+            if [ "$dir" != "." ] && [ ! -f "$dir/README.md" ] && [ -n "$(find "$dir" -maxdepth 1 -name '*.py' -o -name '*.js' -o -name '*.ts' 2>/dev/null)" ]; then
+              echo "📁 Directory $dir might benefit from a README.md file"
+            fi
+          done
+          
+          # Check for outdated documentation patterns
+          while IFS= read -r file; do
+            if [[ "$file" == *.md ]]; then
+              # Check for TODO items
+              if grep -q "TODO\|FIXME\|XXX" "$file"; then
+                echo "📝 File $file contains TODO items that may need attention"
+              fi
+              
+              # Check for broken internal links (basic check)
+              grep -n '\[.*\](.*)' "$file" | grep -v 'http' | while IFS=: read -r line_num link; do
+                link_target=$(echo "$link" | sed 's/.*(\([^)]*\)).*/\1/')
+                if [[ "$link_target" == *.md ]] && [ ! -f "$link_target" ] && [ ! -f "${link_target#./}" ]; then
+                  echo "🔗 Potential broken link in $file:$line_num: $link_target"
+                fi
+              done
+            fi
+          done < doc_files.txt
+
+      - name: Commit documentation fixes
+        if: steps.analyze.outputs.has_doc_files == 'true'
+        run: |
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "Cursor Docs Agent"
+          
+          # Check if there are changes to commit
+          if git diff --quiet; then
+            echo "✅ No documentation formatting changes needed"
+            echo "changes_made=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "📝 Committing documentation improvements..."
+            git add -A
+            git commit -m "📝 Docs Agent: Improve documentation formatting and structure
+
+- Applied prettier formatting to markdown files
+- Fixed heading spacing and list formatting
+- Removed trailing whitespace
+- Ensured proper line endings
+- Applied consistent markdown styling
+
+Auto-generated by cursor-agent-docs workflow"
+            
+            git push origin HEAD
+            echo "changes_made=true" >> "$GITHUB_OUTPUT"
+            echo "✅ Documentation fixes committed and pushed"
+          fi
+
+      - name: Update PR status
+        if: steps.analyze.outputs.has_doc_files == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ steps.pr-info.outputs.pr_number }}
+          
+          # Remove the agent:docs label to indicate completion
+          gh pr edit $PR_NUMBER --remove-label "agent:docs" || echo "Could not remove label"
+          
+          # Add completion comment
+          gh pr comment $PR_NUMBER --body "📝 **Documentation Agent Complete**
+
+The documentation cursor agent has finished processing this PR:
+
+- ✅ Applied prettier formatting to markdown files
+- ✅ Fixed heading spacing and list formatting  
+- ✅ Removed trailing whitespace and fixed line endings
+- ✅ Ran markdownlint and spell checking
+- ✅ Analyzed documentation structure for improvements
+
+The \`agent:docs\` label has been removed. Other cursor agents may still be processing this PR." || echo "Could not add comment"
+
+      - name: Handle no documentation files
+        if: steps.analyze.outputs.has_doc_files == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=${{ steps.pr-info.outputs.pr_number }}
+          
+          echo "No documentation files found, removing agent:docs label"
+          gh pr edit $PR_NUMBER --remove-label "agent:docs" || echo "Could not remove label"

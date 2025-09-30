@@ -1,0 +1,183 @@
+version: '3.8'
+
+services:
+  # Plasma Engine Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_GATEWAY_URL=http://gateway:8000
+      - NEXT_PUBLIC_RESEARCH_URL=http://research:8001
+      - NEXT_PUBLIC_BRAND_URL=http://brand:8002
+      - NEXT_PUBLIC_CONTENT_URL=http://content:8003
+      - NEXT_PUBLIC_AGENT_URL=http://agent:8004
+    depends_on:
+      - gateway
+      - research
+      - brand
+      - content
+      - agent
+    networks:
+      - plasma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Gateway Service (Authentication & GraphQL Federation)
+  gateway:
+    image: plasma-engine/gateway:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/plasma_gateway
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - plasma-network
+    restart: unless-stopped
+
+  # Research Service (Document Processing & Vector Search)
+  research:
+    image: plasma-engine/research:latest
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/plasma_research
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - plasma-network
+    restart: unless-stopped
+    volumes:
+      - research-data:/app/data
+
+  # Brand Service (Social Monitoring & Sentiment Analysis)
+  brand:
+    image: plasma-engine/brand:latest
+    ports:
+      - "8002:8002"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/plasma_brand
+      - REDIS_URL=redis://redis:6379
+      - TWITTER_BEARER_TOKEN=${TWITTER_BEARER_TOKEN}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - plasma-network
+    restart: unless-stopped
+
+  # Content Service (AI Content Generation & Publishing)
+  content:
+    image: plasma-engine/content:latest
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/plasma_content
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - plasma-network
+    restart: unless-stopped
+
+  # Agent Service (Workflow Automation & Browser Control)
+  agent:
+    image: plasma-engine/agent:latest
+    ports:
+      - "8004:8004"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/plasma_agent
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - plasma-network
+    restart: unless-stopped
+    volumes:
+      - agent-workflows:/app/workflows
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_MULTIPLE_DATABASES=plasma_gateway,plasma_research,plasma_brand,plasma_content,plasma_agent
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+    networks:
+      - plasma-network
+    restart: unless-stopped
+
+  # Redis Cache & Session Store
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - plasma-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Prometheus (Metrics Collection)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      - plasma-network
+    restart: unless-stopped
+
+  # Grafana (Metrics Visualization)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - plasma-network
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+  redis-data:
+  research-data:
+  agent-workflows:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  plasma-network:
+    driver: bridge

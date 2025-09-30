@@ -1,5 +1,7 @@
 # Service repositories (managed separately)
+# Note: plasma-engine-frontend is included in this monorepo
 plasma-engine-*/
+!plasma-engine-frontend/
 
 # Environment
 .env
