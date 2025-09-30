@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Override service URLs to use Docker network
+      RESEARCH_SERVICE_URL: http://research:4001/graphql
+      RESEARCH_HEALTH_URL: http://research:4001/health
+      CONTENT_SERVICE_URL: http://content:4002/graphql
+      CONTENT_HEALTH_URL: http://content:4002/health
+      BRAND_SERVICE_URL: http://brand:4003/graphql
+      BRAND_HEALTH_URL: http://brand:4003/health
+      AGENT_SERVICE_URL: http://agent:4004/graphql
+      AGENT_HEALTH_URL: http://agent:4004/health
+    depends_on:
+      - redis
+    networks:
+      - plasma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - plasma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Mock services for testing (replace with actual services)
+  research:
+    image: node:18-alpine
+    working_dir: /app
+    command: >
+      sh -c "
+      echo 'const express = require(\"express\");
+      const app = express();
+      app.get(\"/health\", (req, res) => res.json({ status: \"healthy\" }));
+      app.post(\"/graphql\", (req, res) => res.json({ data: {} }));
+      app.listen(4001, () => console.log(\"Research service mock on 4001\"));' > server.js &&
+      npm install express &&
+      node server.js
+      "
+    networks:
+      - plasma-network
+
+  content:
+    image: node:18-alpine
+    working_dir: /app
+    command: >
+      sh -c "
+      echo 'const express = require(\"express\");
+      const app = express();
+      app.get(\"/health\", (req, res) => res.json({ status: \"healthy\" }));
+      app.post(\"/graphql\", (req, res) => res.json({ data: {} }));
+      app.listen(4002, () => console.log(\"Content service mock on 4002\"));' > server.js &&
+      npm install express &&
+      node server.js
+      "
+    networks:
+      - plasma-network
+
+  brand:
+    image: node:18-alpine
+    working_dir: /app
+    command: >
+      sh -c "
+      echo 'const express = require(\"express\");
+      const app = express();
+      app.get(\"/health\", (req, res) => res.json({ status: \"healthy\" }));
+      app.post(\"/graphql\", (req, res) => res.json({ data: {} }));
+      app.listen(4003, () => console.log(\"Brand service mock on 4003\"));' > server.js &&
+      npm install express &&
+      node server.js
+      "
+    networks:
+      - plasma-network
+
+volumes:
+  redis-data:
+
+networks:
+  plasma-network:
+    driver: bridge

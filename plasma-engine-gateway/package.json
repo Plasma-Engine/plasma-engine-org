@@ -1,0 +1,61 @@
+{
+  "name": "@plasma-engine/gateway",
+  "version": "1.0.0",
+  "description": "Apollo GraphQL Federation Gateway for Plasma Engine",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json}\"",
+    "health-check": "node dist/health-check.js"
+  },
+  "keywords": [
+    "graphql",
+    "apollo",
+    "federation",
+    "gateway",
+    "microservices"
+  ],
+  "author": "Plasma Engine",
+  "license": "PROPRIETARY",
+  "dependencies": {
+    "@apollo/gateway": "^2.5.8",
+    "@apollo/server": "^4.10.0",
+    "@apollo/subgraph": "^2.5.8",
+    "graphql": "^16.8.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0",
+    "dotenv": "^16.3.1",
+    "pino": "^8.16.2",
+    "pino-pretty": "^10.2.3",
+    "ioredis": "^5.3.2",
+    "p-retry": "^5.1.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
