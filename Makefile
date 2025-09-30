@@ -41,9 +41,18 @@ status-all: ## Show git status for all repositories
 		fi \
 	done
 
+# Docker Prerequisites
+.PHONY: check-docker
+check-docker: ## Check Docker and Docker Compose availability
+	@./scripts/check-docker.sh
+
+.PHONY: setup-docker
+setup-docker: ## Install and configure Docker
+	@./scripts/setup-docker.sh
+
 # Development Environment
 .PHONY: setup
-setup: clone-all ## Complete setup of development environment
+setup: check-docker clone-all ## Complete setup of development environment
 	@echo "Setting up development environment..."
 	cd plasma-engine-infra && docker-compose up -d
 	@echo "Installing dependencies..."
@@ -66,22 +75,37 @@ install-deps: ## Install dependencies for all services
 	done
 
 .PHONY: init-db
-init-db: ## Initialize all databases
+init-db: check-docker ## Initialize all databases
 	@echo "Initializing databases..."
-	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_engine;"
-	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_research;"
-	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_brand;"
-	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_content;"
-	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE plasma_agent;"
+	@if [ ! -d "plasma-engine-infra" ]; then \
+		echo "Error: plasma-engine-infra directory not found."; \
+		echo "Run 'make clone-all' first to clone the infrastructure repository."; \
+		exit 1; \
+	fi
+	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS plasma_engine;" || true
+	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS plasma_research;" || true
+	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS plasma_brand;" || true
+	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS plasma_content;" || true
+	cd plasma-engine-infra && docker-compose exec postgres psql -U postgres -c "CREATE DATABASE IF NOT EXISTS plasma_agent;" || true
 
 # Service Management
 .PHONY: start-infra
-start-infra: ## Start infrastructure services
+start-infra: check-docker ## Start infrastructure services
+	@echo "Starting infrastructure services..."
+	@if [ ! -d "plasma-engine-infra" ]; then \
+		echo "Error: plasma-engine-infra directory not found."; \
+		echo "Run 'make clone-all' first to clone the infrastructure repository."; \
+		exit 1; \
+	fi
 	cd plasma-engine-infra && docker-compose up -d
 
 .PHONY: stop-infra
-stop-infra: ## Stop infrastructure services
-	cd plasma-engine-infra && docker-compose down
+stop-infra: check-docker ## Stop infrastructure services
+	@if [ -d "plasma-engine-infra" ]; then \
+		cd plasma-engine-infra && docker-compose down; \
+	else \
+		echo "Warning: plasma-engine-infra directory not found"; \
+	fi
 
 .PHONY: run-gateway
 run-gateway: ## Run Gateway service
@@ -104,7 +128,7 @@ run-agent: ## Run Agent service
 	cd plasma-engine-agent && uvicorn app.main:app --reload --port 8003
 
 .PHONY: run-all
-run-all: start-infra ## Run all services
+run-all: check-docker start-infra ## Run all services
 	@echo "Starting all services..."
 	@tmux new-session -d -s plasma-engine
 	@tmux send-keys -t plasma-engine "cd plasma-engine-gateway && npm run dev" Enter
@@ -148,7 +172,7 @@ lint-all: ## Run linting for all services
 
 # Docker Management
 .PHONY: build-all
-build-all: ## Build Docker images for all services
+build-all: check-docker ## Build Docker images for all services
 	@echo "Building Docker images..."
 	@for repo in gateway research brand content agent; do \
 		if [ -d "plasma-engine-$$repo" ] && [ -f "plasma-engine-$$repo/Dockerfile" ]; then \
@@ -158,7 +182,7 @@ build-all: ## Build Docker images for all services
 	done
 
 .PHONY: push-all
-push-all: ## Push Docker images to registry
+push-all: check-docker ## Push Docker images to registry
 	@echo "Pushing Docker images..."
 	@for repo in gateway research brand content agent; do \
 		docker push plasma-engine/$$repo:latest; \
@@ -176,12 +200,22 @@ clean: ## Clean all build artifacts and dependencies
 	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
 
 .PHONY: logs
-logs: ## Show logs for all services
-	cd plasma-engine-infra && docker-compose logs -f
+logs: check-docker ## Show logs for all services
+	@if [ -d "plasma-engine-infra" ]; then \
+		cd plasma-engine-infra && docker-compose logs -f; \
+	else \
+		echo "Error: plasma-engine-infra directory not found"; \
+		exit 1; \
+	fi
 
 .PHONY: ps
-ps: ## Show running services
-	cd plasma-engine-infra && docker-compose ps
+ps: check-docker ## Show running services
+	@if [ -d "plasma-engine-infra" ]; then \
+		cd plasma-engine-infra && docker-compose ps; \
+	else \
+		echo "Error: plasma-engine-infra directory not found"; \
+		exit 1; \
+	fi
 
 .PHONY: sync-templates
 sync-templates: ## Sync templates across repositories
