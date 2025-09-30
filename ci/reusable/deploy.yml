@@ -1,0 +1,30 @@
+name: reusable-deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      service:
+        required: true
+        type: string
+    secrets: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: ${{ github.repository }}-${{ github.workflow }}-${{ inputs.environment }}-${{ inputs.service }}
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Deploy placeholder
+        run: |
+          echo "# TODO: Implement deployment for ${{ inputs.service }} to ${{ inputs.environment }}"
+

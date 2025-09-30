@@ -1,0 +1,20 @@
+## Explainer: Runs Terraform formatting, validation, and plan for IaC changes.
+## References: docs/devops/playbooks/terraform.md, infra/terraform/README.md
+name: CI - Terraform
+
+on:
+  push:
+    paths:
+      - 'infra/terraform/**'
+  pull_request:
+    paths:
+      - 'infra/terraform/**'
+
+jobs:
+  terraform:
+    name: Terraform fmt/validate/plan
+    uses: ./ci/reusable/terraform.yml
+    with:
+      working-directory: infra/terraform/envs/dev
+      terraform-version: '1.7.5'
+
